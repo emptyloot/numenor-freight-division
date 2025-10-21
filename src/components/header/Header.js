@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import Logo from '../logo/Logo.js'
 function Header() {
@@ -19,7 +19,7 @@ function Header() {
                     <Link to={secondaryLink.to} className="border-2 border-[#FFC107] text-[#FFC107] px-4 py-2 rounded-full hover:bg-[#FFC107] hover:text-[#0B2545] transition-colors">
                         {secondaryLink.text}
                     </Link>
-                    <a href="#" className="bg-[#FFC107] text-[#0B2545] font-bold px-6 py-2 rounded-full hover:opacity-90 transition-opacity">
+                    <a href="/" className="bg-[#FFC107] text-[#0B2545] font-bold px-6 py-2 rounded-full hover:opacity-90 transition-opacity">
                         Login
                     </a>
                 </div>
