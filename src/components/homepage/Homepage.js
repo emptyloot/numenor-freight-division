@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import Calculator from '../../utils/Calculator.js'
+import { useNavigate } from 'react-router-dom';
 
 function Homepage() {
     const [energy, setEnergy] = useState('');
@@ -10,6 +11,12 @@ function Homepage() {
         const hexCost = Calculator(energy,tiles);
         setQuote(hexCost);
     }, [energy,tiles]);
+
+    const navigate = useNavigate();
+    const handleScheduleClick = () => {
+        navigate('/schedule')
+    }
+
 
     return (
         <main className="container mx-auto p-4 text-center text-[#EDF2F4]">
@@ -38,7 +45,7 @@ function Homepage() {
                         </div> 
                     </div>
                     <div className="pt-6">
-                        <button type="button" className="w-full bg-[#FFC107] text-[#0b2545] font-bold text-lg p-3 rounded-full hover:opacity-90 transition-opacity">
+                        <button type="button" onClick={handleScheduleClick} className="w-full bg-[#FFC107] text-[#0b2545] font-bold text-lg p-3 rounded-full hover:opacity-90 transition-opacity">
                             Schedule This Delivery
                         </button>
                     </div>
