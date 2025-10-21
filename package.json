@@ -79,7 +79,11 @@
             "xl",
             "nowrap",
             "whitespace",
-            "firebaserc"
+            "firebaserc",
+            "semibold",
+            "ffc107",
+            "blox",
+            "pathname"
           ]
         }]
     }
