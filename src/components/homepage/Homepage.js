@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 import Calculator from '../../utils/Calculator.js';
 import { useNavigate } from 'react-router-dom';
 
+/**
+@description Hero page for Numenor Freight Division. Inspiring message, instant quote calculator, and steps to follow.
+@returns {object} (JSX.element) renders hero page with instant quote calculator with working input output
+ */
 function Homepage() {
   const [energy, setEnergy] = useState('');
   const [tiles, setTiles] = useState('');
@@ -13,6 +17,11 @@ function Homepage() {
   }, [energy, tiles]);
 
   const navigate = useNavigate();
+  /**
+@description Click event handler for the "Schedule This Delivery" button on the homepage.
+Programmatically navigates the user to the '/schedule' route to fill out the shipment form.
+@returns {void}
+   */
   const handleScheduleClick = () => {
     navigate('/schedule');
   };
