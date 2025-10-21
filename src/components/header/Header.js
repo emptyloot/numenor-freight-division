@@ -1,6 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 
 import Logo from '../logo/Logo.js';
+/**
+@description Provides navigation for website to be persistent on all pages. 
+Includes logo for home page navigation. 
+@returns {object} (JSX.element) render logo and navigation links for website.
+ */
 function Header() {
   const location = useLocation();
   const secondaryLink =
