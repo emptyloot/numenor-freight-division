@@ -1,3 +1,10 @@
+/**
+@description Renders the protected page for scheduling a new shipment.
+ This component displays the main "Shipment Manifest" form where
+ logged-in users can enter route, port, and cargo details to commission
+ a new delivery.
+ @returns {object} (JSX.element) React component for the shipment creation page.
+ */
 function CreateShipment() {
   return (
     <main className="container mx-auto p-4 text-center text-[#EDF2F4]">
