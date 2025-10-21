@@ -1,5 +1,9 @@
 import backGroundMap from '../../assets/bitcraftmapbackground.png';
 
+/**
+@description Uses a blur background and overlay. Give good backdrop for contrast.
+@returns {object} (JSX.element) render blurry map and Numenor themed color overlay.
+ */
 function BackGround() {
   return (
     <div
