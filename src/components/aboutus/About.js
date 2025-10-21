@@ -1,3 +1,7 @@
+/**
+@description Provide basic information about Numenor Freight Division mission and people
+@returns {object} (JSX.element) rendered header and detailed information.
+ */
 function About() {
   return (
     <main className="container mx-auto p-4 text-center text-[#EDF2F4]">
