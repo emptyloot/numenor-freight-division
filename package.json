@@ -24,8 +24,65 @@
     "extends": [
       "react-app",
       "react-app/jest",
+      "plugin:jsdoc/recommended",
       "plugin:prettier/recommended"
-    ]
+    ],
+    "plugins": [
+        "spellcheck"
+    ],
+    "rules": {
+      "jsdoc/require-jsdoc": [
+        "warn",
+        {
+          "require": {
+            "FunctionDeclaration": true,
+            "MethodDefinition": true,
+            "ClassDeclaration": true,
+            "ArrowFunctionExpression": true,
+            "FunctionExpression": true
+          }
+        }
+      ],
+      "spellcheck/spell-checker": ["warn",
+        {
+          "skipWords": [
+            "jsdoc",
+            "eslint",
+            "const",
+            "jsx",
+            "a11y",
+            "Perf",
+            "dom",
+            "matchers",
+            "vitals",
+            "cls",
+            "lcp",
+            "fid",
+            "fcp",
+            "inp",
+            "ttfb",
+            "webfont",
+            "numenor",
+            "bitcraft",
+            "firestore",
+            "quant",
+            "tp",
+            "bg",
+            "mx",
+            "mb",
+            "2xl",
+            "py",
+            "px",
+            "lg",
+            "md",
+            "sm",
+            "xl",
+            "nowrap",
+            "whitespace",
+            "firebaserc"
+          ]
+        }]
+    }
   },
   "browserslist": {
     "production": [
@@ -41,7 +98,9 @@
   },
   "devDependencies": {
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^61.1.5",
     "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-spellcheck": "^0.0.20",
     "prettier": "^3.6.2"
   }
 }
