@@ -1,0 +1,40 @@
+// These rules define who can read, write, and modify data in your Firestore database.
+// They are the core of your backend security.
+rules_version = '2';
+
+service cloud.firestore {
+match /databases/{database}/documents {
+
+// --- USERS Collection ---
+// Users can only read their own user document.
+// Users can only create their own document upon first login.
+// No one can update another user's document.
+match /users/{userId} {
+  allow read, create: if request.auth != null && request.auth.uid == userId;
+  allow update: if false; // Disallow updates for now
+}
+
+// --- CONTRACTS Collection ---
+// This is where the main business logic is enforced.
+match /contracts/{contractId} {
+  // CREATE: A user can only create a contract for themselves.
+  allow create: if request.auth != null && request.resource.data.clientId == request.auth.uid;
+
+  // READ: A user can read a contract if they are the client, the assigned driver, or an NFD staff member.
+  allow read: if request.auth != null && 
+              (request.auth.uid == resource.data.clientId || 
+               request.auth.uid == resource.data.driverId || 
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff');
+               
+  // UPDATE: Only an NFD staff member or the assigned driver can update a contract (e.g., to change status).
+  allow update: if request.auth != null && 
+                (request.auth.uid == resource.data.driverId || 
+                 get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff');
+
+  // DELETE: No one can delete a contract for data integrity.
+  allow delete: if false;
+}
+
+
+}
+}
