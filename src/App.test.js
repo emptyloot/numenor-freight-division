@@ -44,7 +44,7 @@ test('Navigates to About page when About Us link is clicked', async () => {
   expect(aboutHeading).toBeInTheDocument();
 });
 
-test('Render the About agian page and navigates back to calculator', async () => {
+test('Render the About again page and navigates back to calculator', async () => {
   render(
     <MemoryRouter initialEntries={['/about']}>
       <App />
@@ -52,7 +52,6 @@ test('Render the About agian page and navigates back to calculator', async () =>
   );
 
   //Find the Calculator link (case insensitive)
-  screen.debug();
   const calculatorLink = screen.getByRole('link', { name: /calculator/i });
 
   await userEvent.click(calculatorLink);
@@ -70,7 +69,6 @@ test('Render the schedule page and navigates back to calculator', async () => {
   );
 
   //Find the Calculator link (case insensitive)
-  screen.debug();
   const calculatorLink = screen.getByRole('link', { name: /calculator/i });
 
   await userEvent.click(calculatorLink);
