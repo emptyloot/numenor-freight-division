@@ -54,7 +54,7 @@ Programmatically navigates the user to the '/schedule' route to fill out the shi
               </label>
               <input
                 id="number-tiles"
-                typ="number"
+                type="number"
                 min="0"
                 value={tiles}
                 onChange={(e) => setTiles(e.target.value)}

@@ -32,11 +32,15 @@ jobs:
       - name: Lint Code
         run: npm run lint
 
-      # 5. Builds the React application for production
+      # 5. Executes the test suite defined in package.json
+      - name: Run Unit & Integration Tests 
+        run: npm test
+        
+      # 6. Builds the React application for production
       - name: Build
         run: npm run build
 
-      # 6. Deploys the built application to Firebase Hosting
+      # 7. Deploys the built application to Firebase Hosting
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
