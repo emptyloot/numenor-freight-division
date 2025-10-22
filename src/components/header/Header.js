@@ -13,7 +13,7 @@ function Header() {
 
   return (
     <header className="relative z-10 p4">
-      <div className="mx-auto flex justify-between items-center">
+      <div className="container mx-auto flex justify-between items-center">
         <Link to="/">
           <Logo />
         </Link>

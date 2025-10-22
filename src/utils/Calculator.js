@@ -5,8 +5,8 @@
 @returns {number} result of the length a times length b to test website design
  */
 function Calculator(a, b) {
-  const aSize = Number(a);
-  const bSize = Number(b);
+  const aSize = Number(a) || 0;
+  const bSize = Number(b) || 0;
   if (aSize <= 0 || bSize <= 0) {
     return 0;
   }

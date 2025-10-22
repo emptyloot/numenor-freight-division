@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 import Homepage from './components/homepage/Homepage.js';
 import Background from './components/background/Background.js';
@@ -12,7 +12,7 @@ import CreateShipment from './components/scheduleshipmentspage/CreateShipment.js
  */
 function App() {
   return (
-    <BrowserRouter>
+    <div>
       <Background />
       <Header />
       <Routes>
@@ -20,7 +20,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/schedule" element={<CreateShipment />} />
       </Routes>
-    </BrowserRouter>
+    </div>
   );
 }
 

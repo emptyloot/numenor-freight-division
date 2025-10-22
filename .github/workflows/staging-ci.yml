@@ -1,0 +1,41 @@
+name: Staging CI Checks
+
+# Controls when the action will run.
+# Runs on pull requests targeting the "staging" branch.
+on:
+  pull_request:
+    branches:
+      - staging
+
+jobs:
+  # This workflow contains a single job called "ci_checks"
+  ci_checks:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # 1. Checks-out your repository under $GITHUB_WORKSPACE
+      - uses: actions/checkout@v3
+
+      # 2. Sets up the Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22' 
+
+      # 3. Installs dependencies
+      - name: Install Dependencies
+        run: npm ci
+
+      # 4. Runs ESLint
+      - name: Lint Code # Analyzes the code for style consistency and potential errors
+        run: npm run lint
+
+      # 5. Runs Jest tests
+      - name: Run Tests # Executes the test suite defined in package.json
+        run: npm test -- --coverage --watchAll=false 
+
+      # 6. Runs the production build command (without deploying)
+      - name: Build # Creates an optimized production build to catch build errors
+        run: npm run build
