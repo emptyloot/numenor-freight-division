@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import App from './App';
 
 /**
- * @description Renders the full App components and verifys text on screen.
+ * @description Renders the full App components and verifies text on screen.
  */
 test('renders the main homepage title', () => {
   render(<App />);
