@@ -20,7 +20,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/schedule" element={<CreateShipment />} />
       </Routes>
-      </div>
+    </div>
   );
 }
 

@@ -14,9 +14,10 @@ afterEach(cleanup);
  */
 test('Renders the main homepage title', () => {
   render(
-    <MemoryRouter> 
+    <MemoryRouter>
       <App />
-    </MemoryRouter>);
+    </MemoryRouter>
+  );
   // Check for the main H1 title on the homepage
   const headingElement = screen.getByText(/"By land or sea, the world turns on our trade"/i);
   expect(headingElement).toBeInTheDocument();
@@ -27,9 +28,10 @@ test('Renders the main homepage title', () => {
  */
 test('Navigates to About page when About Us link is clicked', async () => {
   render(
-    <MemoryRouter> 
+    <MemoryRouter>
       <App />
-    </MemoryRouter>);
+    </MemoryRouter>
+  );
 
   // Find the "About us" link (case-insensitive)
   const aboutLink = screen.getByRole('link', { name: /about us/i });
@@ -42,15 +44,15 @@ test('Navigates to About page when About Us link is clicked', async () => {
   expect(aboutHeading).toBeInTheDocument();
 });
 
-
 test('Render the About agian page and navigates back to calculator', async () => {
   render(
-    <MemoryRouter initialEntries={['/about']}> 
+    <MemoryRouter initialEntries={['/about']}>
       <App />
-    </MemoryRouter>);
+    </MemoryRouter>
+  );
 
   //Find the Calculator link (case insensitive)
-  screen.debug()
+  screen.debug();
   const calculatorLink = screen.getByRole('link', { name: /calculator/i });
 
   await userEvent.click(calculatorLink);
@@ -60,15 +62,15 @@ test('Render the About agian page and navigates back to calculator', async () =>
   expect(calculatorHeading).toBeInTheDocument();
 });
 
-
 test('Render the schedule page and navigates back to calculator', async () => {
-    render(
-    <MemoryRouter initialEntries={['/schedule']}> 
+  render(
+    <MemoryRouter initialEntries={['/schedule']}>
       <App />
-    </MemoryRouter>);
+    </MemoryRouter>
+  );
 
   //Find the Calculator link (case insensitive)
-   screen.debug()
+  screen.debug();
   const calculatorLink = screen.getByRole('link', { name: /calculator/i });
 
   await userEvent.click(calculatorLink);
