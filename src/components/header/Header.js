@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import LoginButton from '../auth/LoginButton.js';
 
 import Logo from '../logo/Logo.js';
 /**
@@ -25,12 +26,7 @@ function Header() {
           >
             {secondaryLink.text}
           </Link>
-          <a
-            href="/"
-            className="bg-[#FFC107] text-[#0B2545] font-bold px-6 py-2 rounded-full hover:opacity-90 transition-opacity"
-          >
-            Login
-          </a>
+          <LoginButton />
         </div>
       </div>
     </header>
