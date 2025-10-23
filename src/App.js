@@ -20,6 +20,15 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/schedule" element={<CreateShipment />} />
       </Routes>
+      <footer>
+        <p>
+          Flag icon by Aratan Isildurion, used under
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">
+            CC BY-SA 4.0
+          </a>
+          .
+        </p>
+      </footer>
     </div>
   );
 }
