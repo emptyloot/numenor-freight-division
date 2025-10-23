@@ -85,11 +85,18 @@
             "semibold",
             "ffc107",
             "blox",
-            "pathname"
+            "pathname",
+            "noopener",
+            "noreferrer"
           ]
         }
       ]
     }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix --max-warnings=0"
+    ]
   },
   "browserslist": {
     "production": [
