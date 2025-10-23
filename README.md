@@ -1,70 +1,83 @@
-# Getting Started with Create React App
+# ⚓ Númenor Freight Division (NFD)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The Númenor Freight Division operates as a premier, high-fidelity in-game logistics service for the world of BitCraft. Our mission is to eliminate the tedious hauling bottleneck that cripples large-scale projects, allowing builders and traders to focus on their craft while we handle the roads and seas.
 
-## Available Scripts
+This repository contains the source code for our client-facing web application, built to automate quoting, scheduling, and tracking.
 
-In the project directory, you can run:
+## Table of Contents
+- [Key Features](#-key-features)
+- [Tech Stack & Infrastructure](#-tech-stack--infrastructure)
+- [Setup and Development](#-setup-and-development)
+- [Deployment & CI/CD Workflow](#-deployment--cicd-workflow)
+- [Project URL](#-project-url)
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🚀 Key Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Instant Quote Calculator:** Uses a transparent, fixed formula to give clients an immediate price quote.
+- **Discord Integration:** Seamless client login using Discord OAuth, allowing for personalized dashboards and automated notifications.
+- **Protected Routes:** Ensures client dashboards and the staff dispatch board are only accessible to logged-in users.
+- **Real-Time Tracking (Future):** Planned integration with Firestore to provide live updates on cargo status.
+- **Professional CI/CD:** Automated testing and deployment on every push to the main branch.
 
-### `npm test`
+## 🛠️ Tech Stack & Infrastructure
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Component      | Technology         | Role                                                  |
+| -------------- | ------------------ | ----------------------------------------------------- |
+| **Frontend**   | React              | Core component library for the application interface. |
+| **Styling**    | Tailwind CSS       | Utility-first framework for rapid, responsive design. |
+| **Routing**    | React Router DOM   | Handles client-side navigation (Single-Page App).     |
+| **Database**   | Firebase Firestore | NoSQL cloud database for storing user and contract data.|
+| **Hosting & Auth** | Firebase Hosting / Auth | Hosting the static site and managing secure Discord login.|
+| **CI/CD**      | GitHub Actions     | Automates quality checks and deployment to Firebase.  |
 
-### `npm run build`
+## ⚙️ Setup and Development
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Prerequisites
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Node.js (v20+): Required for the React environment.
+- Firebase CLI: Global installation required:
+  ```bash
+  npm install -g firebase-tools
+  ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Local Installation
 
-### `npm run eject`
+Clone the repository and install all dependencies:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+git clone https://github.com/emptyloot/numenor-freight-division.git
+cd numenor-freight-division
+npm install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Running Locally
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+To start the development server, run:
+```bash
+npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Development Standards
 
-## Learn More
+This project enforces strict coding standards via pre-commit checks and CI:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+| Standard      | Tool          | Purpose                                                                 |
+| ------------- | ------------- | ----------------------------------------------------------------------- |
+| **Formatting**  | Prettier      | Ensures consistent spacing, quotes, and syntax across all files.      |
+| **Code Quality**| ESLint        | Flags potential bugs, enforces JSDoc documentation, and maintains style rules. |
+| **Testing**     | Jest & RTL    | Unit and integration tests must run successfully, maintaining 80% coverage minimum. |
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🌐 Deployment & CI/CD Workflow
 
-### Code Splitting
+The project uses a stable `development` -> `staging` -> `main` branching strategy.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Branch        | Protection                            | Automation                                                              |
+| ------------- | ------------------------------------- | ----------------------------------------------------------------------- |
+| `development` | Minimal                               | Used for feature work. Merges into `staging`.                           |
+| `staging`     | Requires PR + CI Checks               | Runs Lint, Unit Tests, and Build check (`staging-ci.yml`). Ensures stability. |
+| `main`        | Requires PR + Code Owner Review + CI/Deploy Checks | Runs full checks and automatically deploys the stable code to Firebase Hosting. |
 
-### Analyzing the Bundle Size
+## Project URL
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Primary Hosting URL: [https://numenor-freight-division.web.app](https://numenor-freight-division.web.app)
