@@ -4,17 +4,11 @@
  It can be customized with properties to handle login events and disabled states.
 @returns {object} Render of the login button
  */
-function LoginButton() {
+const LoginButton = () => {
   return (
-    <div>
-      <a
-        href="/"
-        className="bg-[#FFC107] text-[#0B2545] font-bold px-6 py-2 rounded-full hover:opacity-90 transition-opacity"
-      >
-        Login
-      </a>
-    </div>
+    <button className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-2 px-4 rounded-md flex items-center">
+      Login with Discord
+    </button>
   );
-}
-
+};
 export default LoginButton;
