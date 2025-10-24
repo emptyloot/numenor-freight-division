@@ -87,7 +87,9 @@
             "blox",
             "pathname",
             "noopener",
-            "noreferrer"
+            "noreferrer",
+            "href",
+            "mr"
           ]
         }
       ]
