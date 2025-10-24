@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import LoginButton from '../auth/LoginButton.js';
 import LogoutButton from '../auth/LogoutButton.js';
 import UserProfile from '../auth/UserProfile.js';
@@ -12,7 +12,7 @@ Includes logo for home page navigation.
  */
 function Header() {
   const location = useLocation();
-  const [isAuthenticated] = useState(false);
+  const { isAuthenticated } = useAuth();
   const secondaryLink =
     location.pathname === '/' ? { to: '/about', text: 'About us' } : { to: '/', text: 'Calculator' };
 
