@@ -5,9 +5,21 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
+
+import { useAuth } from './context/AuthContext';
+// Mock the useAuth hook
+jest.mock('./context/AuthContext');
 
 afterEach(cleanup);
+
+beforeEach(() => {
+  useAuth.mockReturnValue({
+    isAuthenticated: true,
+    setIsAuthenticated: jest.fn(),
+    user: { username: 'TestUser' },
+  });
+});
 
 /**
  * @description Renders the full App components and verifies text on screen.
