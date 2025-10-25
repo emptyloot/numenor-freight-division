@@ -12,12 +12,12 @@ describe('LogoutButton', () => {
   });
 
   test('calls setIsAuthenticated(false) when clicked', () => {
-    const setIsAuthenticatedMock = jest.fn();
-    useAuth.mockReturnValue({ setIsAuthenticated: setIsAuthenticatedMock });
+    const logoutMock = jest.fn();
+    useAuth.mockReturnValue({ logout: logoutMock });
     render(<LogoutButton />);
 
     fireEvent.click(screen.getByRole('button', { name: /Logout/i }));
-    expect(setIsAuthenticatedMock).toHaveBeenCalledWith(false);
+    expect(logoutMock).toHaveBeenCalledTimes(1);
   });
 
   test('has correct styling', () => {
