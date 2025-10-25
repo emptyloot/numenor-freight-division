@@ -26,7 +26,7 @@ function Header() {
         <div className="hidden md:flex items-center space-x-4">
           <Link
             to={secondaryLink.to}
-            className="border-2 border-[#FFC107] text-[#FFC107] px-4 py-2 rounded-full hover:bg-[#FFC107] hover:text-[#0B2545] transition-colors"
+            className="border-2 border-[#FFC107] text-[#FFC107] px-4 py-2 rounded-full hover:bg-[#FFC107] hover:text-[#0B2545] transition-colors whitespace-nowrap"
           >
             {secondaryLink.text}
           </Link>
