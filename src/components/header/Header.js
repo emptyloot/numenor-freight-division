@@ -1,4 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import LoginButton from '../auth/LoginButton.js';
+import LogoutButton from '../auth/LogoutButton.js';
+import UserProfile from '../auth/UserProfile.js';
 
 import Logo from '../logo/Logo.js';
 /**
@@ -8,6 +12,7 @@ Includes logo for home page navigation.
  */
 function Header() {
   const location = useLocation();
+  const { currentUser } = useAuth();
   const secondaryLink =
     location.pathname === '/' ? { to: '/about', text: 'About us' } : { to: '/', text: 'Calculator' };
 
@@ -21,16 +26,18 @@ function Header() {
         <div className="hidden md:flex items-center space-x-4">
           <Link
             to={secondaryLink.to}
-            className="border-2 border-[#FFC107] text-[#FFC107] px-4 py-2 rounded-full hover:bg-[#FFC107] hover:text-[#0B2545] transition-colors"
+            className="border-2 border-[#FFC107] text-[#FFC107] px-4 py-2 rounded-full hover:bg-[#FFC107] hover:text-[#0B2545] transition-colors whitespace-nowrap"
           >
             {secondaryLink.text}
           </Link>
-          <a
-            href="/"
-            className="bg-[#FFC107] text-[#0B2545] font-bold px-6 py-2 rounded-full hover:opacity-90 transition-opacity"
-          >
-            Login
-          </a>
+          {currentUser ? (
+            <>
+              <UserProfile />
+              <LogoutButton />
+            </>
+          ) : (
+            <LoginButton />
+          )}
         </div>
       </div>
     </header>
