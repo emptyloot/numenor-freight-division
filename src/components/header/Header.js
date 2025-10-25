@@ -12,7 +12,7 @@ Includes logo for home page navigation.
  */
 function Header() {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { currentUser } = useAuth();
   const secondaryLink =
     location.pathname === '/' ? { to: '/about', text: 'About us' } : { to: '/', text: 'Calculator' };
 
@@ -30,7 +30,7 @@ function Header() {
           >
             {secondaryLink.text}
           </Link>
-          {isAuthenticated ? (
+          {currentUser ? (
             <>
               <UserProfile />
               <LogoutButton />

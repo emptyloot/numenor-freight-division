@@ -59,7 +59,7 @@ describe('Header component', () => {
   });
 
   test('shows Logout button when authenticated', () => {
-    useAuth.mockReturnValue({ isAuthenticated: true });
+    useAuth.mockReturnValue({ currentUser: true });
     render(
       <MemoryRouter>
         <Header />
