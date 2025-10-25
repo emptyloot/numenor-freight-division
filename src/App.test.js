@@ -11,6 +11,7 @@ import { useAuth } from './context/AuthContext';
 // Mock the useAuth hook
 jest.mock('./context/AuthContext');
 jest.mock('axios');
+jest.mock('firebase/auth');
 
 afterEach(cleanup);
 

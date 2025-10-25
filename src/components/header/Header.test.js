@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 // Mock the useAuth hook
 jest.mock('../../context/AuthContext');
+jest.mock('firebase/auth');
 
 // Mock the child components
 jest.mock('../auth/LoginButton.js', () => () => <button>Login</button>);
