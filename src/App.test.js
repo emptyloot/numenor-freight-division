@@ -6,10 +6,11 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
 import { MemoryRouter } from 'react-router-dom';
-
 import { useAuth } from './context/AuthContext';
+
 // Mock the useAuth hook
 jest.mock('./context/AuthContext');
+jest.mock('axios');
 
 afterEach(cleanup);
 
