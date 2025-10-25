@@ -94,7 +94,8 @@
             "mr",
             "firebase",
             "axios",
-            "uri"
+            "uri",
+            "localhost"
           ]
         }
       ]
