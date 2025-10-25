@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'; // Import signOut
 
 const AuthContext = createContext();
 
@@ -32,13 +32,24 @@ export function AuthProvider({ children }) {
     };
   }, [auth]);
 
+  /**
+   *
+   */
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      // The onAuthStateChanged listener will automatically update isAuthenticated and user state.
+    } catch (error) {
+      console.error('Error signing out:', error);
+      // Optionally, you can add user-facing error feedback here
+    }
+  };
+
   const value = {
     isAuthenticated,
-    setIsAuthenticated,
     user,
-    setUser,
     isLoading,
-    setIsLoading,
+    logout, // Expose the logout function
   };
 
   return <AuthContext.Provider value={value}>{!isLoading && children}</AuthContext.Provider>;
