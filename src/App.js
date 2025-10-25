@@ -6,6 +6,8 @@ import Header from './components/header/Header.js';
 import About from './components/aboutus/About.js';
 import CreateShipment from './components/scheduleshipmentspage/CreateShipment.js';
 
+import AuthCallback from './components/auth/AuthCallback.js';
+
 /**
 @description The main application component that assembles the page layout and defines the routes.
 @returns {object} (JSX.element) The rendered application with a persistent background and header.
@@ -19,6 +21,7 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/about" element={<About />} />
         <Route path="/schedule" element={<CreateShipment />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
       <footer>
         <p>
