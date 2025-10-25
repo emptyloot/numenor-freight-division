@@ -1,30 +1,46 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import LoginButton from './LoginButton';
-import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
 
-// Mock the useAuth hook
-jest.mock('../../context/AuthContext');
+jest.mock('axios');
 
 describe('LoginButton', () => {
-  test('renders the login button', () => {
-    useAuth.mockReturnValue({ setIsAuthenticated: jest.fn() });
-    render(<LoginButton />);
-    expect(screen.getByRole('button', { name: /Login with Discord/i })).toBeInTheDocument();
+  beforeEach(() => {
+    axios.get.mockResolvedValue({ data: { clientId: '12345' } });
+    // Mock window.location.href
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { href: '' },
+    });
   });
 
-  test('calls setIsAuthenticated(true) when clicked', () => {
-    const setIsAuthenticatedMock = jest.fn();
-    useAuth.mockReturnValue({ setIsAuthenticated: setIsAuthenticatedMock });
+  test('renders the login button', async () => {
     render(<LoginButton />);
-
-    fireEvent.click(screen.getByRole('button', { name: /Login with Discord/i }));
-    expect(setIsAuthenticatedMock).toHaveBeenCalledWith(true);
+    expect(await screen.findByRole('button', { name: /Login with Discord/i })).toBeInTheDocument();
   });
 
-  test('has correct styling', () => {
-    useAuth.mockReturnValue({ setIsAuthenticated: jest.fn() });
+  test('redirects to Discord authorization URL when clicked', async () => {
     render(<LoginButton />);
-    const buttonElement = screen.getByRole('button', { name: /Login with Discord/i });
+
+    // Wait for the button to be enabled after clientId is fetched
+    const loginButton = await screen.findByRole('button', { name: /Login with Discord/i });
+    expect(loginButton).not.toBeDisabled();
+
+    fireEvent.click(loginButton);
+
+    const expectedClientId = '12345';
+    const redirectUri = 'http://localhost:3000/auth/callback';
+    const scope = 'identify';
+    const expectedAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${expectedClientId}&redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}&response_type=code&scope=${encodeURIComponent(scope)}`;
+
+    expect(window.location.href).toBe(expectedAuthUrl);
+  });
+
+  test('has correct styling', async () => {
+    render(<LoginButton />);
+    const buttonElement = await screen.findByRole('button', { name: /Login with Discord/i });
     expect(buttonElement).toHaveClass('bg-[#5865F2]');
     expect(buttonElement).toHaveClass('hover:bg-[#4752C4]');
     expect(buttonElement).toHaveClass('text-white');
