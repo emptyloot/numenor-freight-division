@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter and useN
 
 import Homepage from './Homepage'; // Import the component to test
 import Calculator from '../../utils/Calculator'; // Import the function to mock
+import { useAuth } from '../../context/AuthContext';
 
 // --- Mock Dependencies ---
 
@@ -25,6 +26,12 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate, // Replace useNavigate with our mock
 }));
 
+// 3. Mock the useAuth hook
+jest.mock('../../context/AuthContext');
+
+// 4. Mock the LoginButton component
+jest.mock('../auth/LoginButton.js', () => ({ children }) => <button>{children || 'Login to Schedule'}</button>);
+
 // --- Test Suite ---
 
 describe('Homepage Component', () => {
@@ -33,6 +40,8 @@ describe('Homepage Component', () => {
     jest.clearAllMocks();
     // Set a default return value for the mocked calculator
     Calculator.mockReturnValue(0);
+    // Set a default return value for the useAuth hook for tests outside the specific auth describe blocks
+    useAuth.mockReturnValue({ currentUser: null });
   });
 
   /**
@@ -59,9 +68,6 @@ describe('Homepage Component', () => {
 
     // Check initial quote display
     expect(screen.getByText(/--- Hex/i)).toBeInTheDocument();
-
-    // Check button
-    expect(screen.getByRole('button', { name: /Schedule This Delivery/i })).toBeInTheDocument();
 
     // Check steps section (simple check for one step)
     expect(screen.getByText(/Step 1: Get an instant and transparent quote/i)).toBeInTheDocument();
@@ -102,23 +108,48 @@ describe('Homepage Component', () => {
   });
 
   /**
-   * @description Verifies clicking the schedule button calls navigate.
+   * @description Tests for when a user is authenticated.
    */
-  test('calls navigate when schedule button is clicked', async () => {
-    render(
-      <MemoryRouter>
-        <Homepage />
-      </MemoryRouter>
-    );
+  describe('when user is authenticated', () => {
+    beforeEach(() => {
+      useAuth.mockReturnValue({ currentUser: { uid: 'test-user' } });
+    });
 
-    // Find the button
-    const scheduleButton = screen.getByRole('button', { name: /Schedule This Delivery/i });
+    test('shows "Schedule This Delivery" button and not login button', () => {
+      render(
+        <MemoryRouter>
+          <Homepage />
+        </MemoryRouter>
+      );
+      expect(screen.getByRole('button', { name: /Schedule This Delivery/i })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Login to Schedule/i })).not.toBeInTheDocument();
+    });
 
-    // Simulate click
-    await userEvent.click(scheduleButton);
+    test('calls navigate when schedule button is clicked', async () => {
+      render(
+        <MemoryRouter>
+          <Homepage />
+        </MemoryRouter>
+      );
+      const scheduleButton = screen.getByRole('button', { name: /Schedule This Delivery/i });
+      await userEvent.click(scheduleButton);
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
+      expect(mockNavigate).toHaveBeenCalledWith('/schedule');
+    });
+  });
 
-    // Verify the mock navigate function was called correctly
-    expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith('/schedule');
+  /**
+   * @description Tests for when a user is not authenticated.
+   */
+  describe('when user is not authenticated', () => {
+    beforeEach(() => {
+      useAuth.mockReturnValue({ currentUser: null });
+    });
+
+    test('shows "Login to Schedule" button and not schedule button', () => {
+      render(<Homepage />, { wrapper: MemoryRouter });
+      expect(screen.getByRole('button', { name: /Login to Schedule/i })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Schedule This Delivery/i })).not.toBeInTheDocument();
+    });
   });
 });
