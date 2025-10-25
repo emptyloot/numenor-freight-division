@@ -1,8 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-const auth = getAuth();
-
 const AuthContext = createContext();
 
 /**
@@ -12,6 +10,7 @@ const AuthContext = createContext();
  * @returns {object} A context provider wrapping the child
  */
 export function AuthProvider({ children }) {
+  const auth = getAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +30,7 @@ export function AuthProvider({ children }) {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [auth]);
 
   const value = {
     isAuthenticated,
