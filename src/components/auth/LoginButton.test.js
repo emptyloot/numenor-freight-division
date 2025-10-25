@@ -14,9 +14,14 @@ describe('LoginButton', () => {
     });
   });
 
-  test('renders the login button', async () => {
+  test('renders the login button with default text when no children are provided', async () => {
     render(<LoginButton />);
     expect(await screen.findByRole('button', { name: /Login with Discord/i })).toBeInTheDocument();
+  });
+
+  test('renders the login button with custom text when children are provided', async () => {
+    render(<LoginButton>Login to Schedule</LoginButton>);
+    expect(await screen.findByRole('button', { name: /Login to Schedule/i })).toBeInTheDocument();
   });
 
   test('redirects to Discord authorization URL when clicked', async () => {

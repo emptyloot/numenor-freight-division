@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 /**
+ * @param {object} props The component props.
+ * @param {React.ReactNode} [props.children] Custom content for the button. Defaults to 'Login with Discord'.
  * @description Renders a button that redirects the user to the Discord authorization page.
  *              It fetches the Discord Client ID from the backend on component mount.
  * @returns {object} Render of the login button.
  */
-const LoginButton = () => {
+const LoginButton = ({ children }) => {
   const [clientId, setClientId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,9 +55,9 @@ const LoginButton = () => {
     <button
       onClick={handleLogin}
       disabled={loading || !clientId}
-      className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-2 px-4 rounded-md flex items-center disabled:bg-gray-400 disabled:cursor-not-allowed"
+      className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-2 px-4 rounded-md flex items-center justify-center w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
     >
-      {loading ? 'Loading...' : 'Login with Discord'}
+      {loading ? 'Loading...' : children || 'Login with Discord'}
     </button>
   );
 };
