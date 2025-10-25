@@ -1,64 +1,67 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'; // Import signOut
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, firestore } from '../firebase/firebase';
 
 const AuthContext = createContext();
 
 /**
- * Provides authentication context to its children components.
- * @param {object} children The component's properties.
- * @param {object} children.children - The child components to be wrapped by the provider.
- * @returns {object} A context provider wrapping the child
+ * @description Provides authentication context to its children components, managing user login state
+ *              and providing methods for authentication actions like logout. It integrates with Firebase
+ *              Authentication and Firestore to manage user sessions and profiles.
+ * @returns {object} An AuthContext.Provider component that supplies authentication-related data
+ *                   and functions to its descendant components.
  */
-export function AuthProvider({ children }) {
-  const auth = getAuth();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        setIsAuthenticated(true);
-        setIsLoading(false);
-      } else {
-        setUser(null);
-        setIsAuthenticated(false);
-        setIsLoading(false);
-      }
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, [auth]);
-
-  /**
-   *
-   */
-  const logout = async () => {
-    try {
-      await signOut(auth);
-      // The onAuthStateChanged listener will automatically update isAuthenticated and user state.
-    } catch (error) {
-      console.error('Error signing out:', error);
-      // Optionally, you can add user-facing error feedback here
-    }
-  };
-
-  const value = {
-    isAuthenticated,
-    user,
-    isLoading,
-    logout, // Expose the logout function
-  };
-
-  return <AuthContext.Provider value={value}>{!isLoading && children}</AuthContext.Provider>;
-}
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
 
 /**
- * Custom hook to access the authentication context.
- * @returns {AuthContext} The authentication context value.
+ * @description AuthProvider component that manages user authentication state using Firebase.
+ *              It provides the current user and a logout function to its children.
+ * @param {object} root0 - The props object.
+ * @param {React.ReactNode} root0.children - The child components to be rendered within the provider.
+ * @returns {object} AuthContext.Provider with the current user and logout function.
  */
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const AuthProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  /**
+   * @description Signs out the current user from Firebase.
+   */
+  const logout = () => {
+    signOut(auth);
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in, now fetch their profile from Firestore.
+        const userRef = doc(firestore, 'users', user.uid); // eslint-disable-line
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+          setCurrentUser({ ...user, ...docSnap.data() });
+        } else {
+          // Handle case where user exists in Auth but not in Firestore
+          console.error("User document doesn't exist in Firestore.");
+          setCurrentUser(user);
+        }
+      } else {
+        // User is signed out
+        setCurrentUser(null);
+      }
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const value = {
+    currentUser,
+    logout,
+  };
+
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+};
