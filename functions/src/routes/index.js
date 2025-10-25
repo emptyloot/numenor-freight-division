@@ -19,6 +19,11 @@ const allowedOrigins = ['http://localhost:3000', 'https://numenor-freight-divisi
 
 app.use(
   cors({
+    /**
+     * @description   A function to determine if the requesting origin is allowed.
+     * @param {string} origin The origin of the request.
+     * @param {object} callback The callback function to be called with the allowed status.
+     */
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
@@ -29,12 +34,21 @@ app.use(
   })
 );
 
-// Simple endpoint for testing
+/**
+ * @description Simple endpoint for testing the API's availability.
+ * @param {object} req The Express request object. //enlist-ignore-line
+ * @param {object} res The Express response object.
+ */
 app.get('/', (req, res) => {
   res.send('Hello from the Numenor API!');
 });
 
-// Endpoint to provide public client configuration
+/**
+ * @description Endpoint to provide the public Discord client ID to the front end.
+ *              This is used by the front end to construct the Discord OAuth2 URL.
+ * @param {object} req The Express request object.
+ * @param {object} res The Express response object.
+ */
 app.get('/auth/config', (req, res) => {
   try {
     const clientId = process.env.DISCORD_CLIENT_ID;
@@ -49,7 +63,15 @@ app.get('/auth/config', (req, res) => {
   }
 });
 
-// The main endpoint for Discord authentication
+/**
+ * @description The main endpoint for Discord authentication. It receives an authorization code from the client,
+ *              exchanges it for a Discord access token, fetches the user's Discord profile, creates a custom
+ *              Firebase token, saves/updates the user's data in Firestore, and returns the Firebase token
+ *              to the client for sign-in.
+ * @param {object} req The Express request object.
+ * @param {string} req.body.code The Discord authorization code.
+ * @param {object} res The Express response object.
+ */
 app.post('/auth/discord', async (req, res) => {
   const { code } = req.body;
 

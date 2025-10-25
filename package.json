@@ -99,7 +99,8 @@
             "localhost",
             "cors",
             "unmount",
-            "uid"
+            "uid",
+            "req"
           ]
         }
       ]
