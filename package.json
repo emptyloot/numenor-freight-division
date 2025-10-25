@@ -7,6 +7,8 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.12.2",
+    "firebase": "^12.4.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router": "^6.30.1",
@@ -89,7 +91,10 @@
             "noopener",
             "noreferrer",
             "href",
-            "mr"
+            "mr",
+            "firebase",
+            "axios",
+            "uri"
           ]
         }
       ]
@@ -120,6 +125,9 @@
     "prettier": "^3.6.2"
   },
   "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!axios)/"
+    ],
     "coveragePathIgnorePatterns": [
       "<rootDir>/src/reportWebVitals.js",
       "<rootDir>/src/index.js"
