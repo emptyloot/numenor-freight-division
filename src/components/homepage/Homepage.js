@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import Calculator from '../../utils/Calculator.js';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext.js';
+import LoginButton from '../auth/LoginButton.js';
 
 /**
 @description Hero page for Numenor Freight Division. Inspiring message, instant quote calculator, and steps to follow.
@@ -11,6 +13,7 @@ function Homepage() {
   const [energy, setEnergy] = useState('');
   const [tiles, setTiles] = useState('');
   const [quote, setQuote] = useState(0);
+  const { currentUser } = useAuth();
   useEffect(() => {
     const hexCost = Calculator(energy, tiles);
     setQuote(hexCost);
@@ -67,13 +70,17 @@ Programmatically navigates the user to the '/schedule' route to fill out the shi
               </div>
             </div>
             <div className="pt-6">
-              <button
-                type="button"
-                onClick={handleScheduleClick}
-                className="w-full bg-[#FFC107] text-[#0b2545] font-bold text-lg p-3 rounded-full hover:opacity-90 transition-opacity"
-              >
-                Schedule This Delivery
-              </button>
+              {currentUser ? (
+                <button
+                  type="button"
+                  onClick={handleScheduleClick}
+                  className="w-full bg-[#FFC107] text-[#0b2545] font-bold text-lg p-3 rounded-full hover:opacity-90 transition-opacity"
+                >
+                  Schedule This Delivery
+                </button>
+              ) : (
+                <LoginButton>Login to Schedule</LoginButton>
+              )}
             </div>
           </form>
         </div>
