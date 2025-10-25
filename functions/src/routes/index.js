@@ -19,11 +19,6 @@ const allowedOrigins = ['http://localhost:3000', 'https://numenor-freight-divisi
 
 app.use(
   cors({
-    /**
-     *
-     * @param origin
-     * @param callback
-     */
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
@@ -95,15 +90,15 @@ app.post('/auth/discord', async (req, res) => {
     });
 
     const discordUser = userResponse.data;
-    const uid = `discord:${discordUser.id}`;
+    const uId = `discord:${discordUser.id}`;
     console.log(`Successfully fetched user profile for ${discordUser.username}.`);
 
     // 3. Create a custom Firebase token for the user
-    const firebaseToken = await admin.auth().createCustomToken(uid);
+    const firebaseToken = await admin.auth().createCustomToken(uId);
     console.log('Successfully created custom Firebase token.');
 
     // 4. (Optional but recommended) Save user data to Firestore
-    const userRef = admin.firestore().collection('users').doc(uid);
+    const userRef = admin.firestore().collection('users').doc(uId);
     await userRef.set(
       {
         discordId: discordUser.id,
