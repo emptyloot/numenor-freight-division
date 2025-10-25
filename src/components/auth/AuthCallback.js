@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { signInWithCustomToken } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
-import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 
 /**
@@ -10,7 +9,6 @@ import axios from 'axios';
 @returns {object} rendering of text while api calls resolve.
  */
 const AuthCallback = () => {
-  const { setIsAuthenticated, setUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const isAuthenticating = useRef(false);
@@ -34,8 +32,6 @@ const AuthCallback = () => {
           return signInWithCustomToken(auth, firebaseToken);
         })
         .then((userCredential) => {
-          setUser(userCredential.user);
-          setIsAuthenticated(true);
           navigate('/'); // Redirect to homepage after successful login
         })
         .catch((error) => {
@@ -43,7 +39,7 @@ const AuthCallback = () => {
           navigate('/login-error'); // Redirect to an error page
         });
     }
-  }, [location, navigate, setIsAuthenticated, setUser]);
+  }, [location, navigate]);
 
   return <div>Loading, please wait...</div>;
 };

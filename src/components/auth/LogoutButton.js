@@ -1,5 +1,8 @@
 import { useAuth } from '../../context/AuthContext';
 
+//Mocks
+jest.mock('firebase/auth');
+
 /**
 @description Renders a button to log the user out.
 @returns {object} Render of the logout button
