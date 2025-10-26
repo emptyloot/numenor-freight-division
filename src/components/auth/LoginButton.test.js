@@ -7,10 +7,10 @@ jest.mock('axios');
 describe('LoginButton', () => {
   beforeEach(() => {
     axios.get.mockResolvedValue({ data: { clientId: '12345' } });
-    // Mock window.location.href
+    // Mock window.location
     Object.defineProperty(window, 'location', {
       writable: true,
-      value: { href: '' },
+      value: { href: '', origin: 'http://localhost:3000' },
     });
   });
 
