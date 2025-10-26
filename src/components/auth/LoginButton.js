@@ -18,8 +18,14 @@ const LoginButton = ({ children }) => {
      */
     const fetchConfig = async () => {
       try {
-        // TODO: Replace with your production function URL when deployed
-        const functionUrl = 'http://localhost:5001/numenor-freight-division/us-central1/api/auth/config';
+        let functionUrl;
+        if (window.location.hostname === 'localhost') {
+          // Local development, requires full URL
+          functionUrl = 'http://localhost:5001/numenor-freight-division/us-central1/api/auth/config';
+        } else {
+          // Production, uses rewrite rule in firebase.json
+          functionUrl = '/api/auth/config';
+        }
         const response = await axios.get(functionUrl);
         setClientId(response.data.clientId);
       } catch (error) {
@@ -38,7 +44,7 @@ const LoginButton = ({ children }) => {
    */
   const handleLogin = () => {
     console.log('Logging in...');
-    const redirectUri = 'http://localhost:3000/auth/callback';
+    const redirectUri = `${window.location.origin}/auth/callback`;
     const scope = 'identify'; // Request access to user's ID, username, and avatar
 
     if (!clientId) {

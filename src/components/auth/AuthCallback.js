@@ -21,9 +21,7 @@ const AuthCallback = () => {
       isAuthenticating.current = true;
 
       const functionsUrl =
-        window.location.hostname === 'localhost'
-          ? 'http://localhost:5001/numenor-freight-division/us-central1'
-          : 'https://us-central1-numenor-freight-division.cloudfunctions.net';
+        window.location.hostname === 'localhost' ? 'http://localhost:5001/numenor-freight-division/us-central1' : '';
 
       axios
         .post(`${functionsUrl}/api/auth/discord`, { code })
