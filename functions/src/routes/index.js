@@ -15,7 +15,11 @@ if (process.env.FUNCTIONS_EMULATOR) {
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'https://numenor-freight-division.web.app'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://numenor-freight-division.web.app',
+  'https://numenor-freight-division.firebaseapp.com',
+];
 
 app.use(
   cors({
