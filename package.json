@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
     "axios": "^1.12.2",
     "firebase": "^12.4.0",
     "react": "^19.2.0",
@@ -17,7 +13,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start:react": "react-scripts start",
+    "serve:emulators": "firebase emulators:start --only functions,firestore,auth,hosting",
+    "start": "npm run build && npm run serve:emulators",
     "build": "react-scripts build",
     "lint": "eslint \"src/**/*.{js,jsx}\" \"functions/src/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx}\" \"functions/src/**/*.js\" --fix",
@@ -124,10 +122,15 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jsdoc": "^61.1.5",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-spellcheck": "^0.0.20",
+    "firebase-tools": "^14.22.0",
     "prettier": "^3.6.2"
   },
   "jest": {
