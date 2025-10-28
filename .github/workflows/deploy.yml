@@ -6,12 +6,20 @@ on:
   push:
     branches:
       - main
+      - staging
 
 jobs:
   # This workflow contains a single job called "build_and_deploy"
   build_and_deploy:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+
+    # Set environment variables based on the branch
+    env:
+      # Sets project ID based on branch
+      FIREBASE_PROJECT_ID: ${{ github.ref == 'refs/heads/main' && 'numenor-freight-division' || 'numenor-freight-staging' }}
+      # Sets the correct service account secret based on branch
+      FIREBASE_SERVICE_ACCOUNT: ${{ github.ref == 'refs/heads/main' && secrets.FIREBASE_SERVICE_ACCOUNT_NUMENOR_FREIGHT || secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,11 +48,17 @@ jobs:
       - name: Build
         run: npm run build
 
-      # 7. Deploys the built application to Firebase Hosting
-      - name: Deploy to Firebase
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      # 7. Install function dependencies
+      - name: Install Function Dependencies
+        run: cd functions && npm ci
+      
+      # 8. Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUMENOR_FREIGHT }}'
-          channelId: live
-          projectId: numenor-freight-division
+          credentials_json: '${{ env.FIREBASE_SERVICE_ACCOUNT }}'
+
+      # 9. Deploy to Firebase using local npx
+      - name: Deploy to Firebase
+        run: |
+          npx firebase deploy --only functions,hosting:live --project ${{ env.FIREBASE_PROJECT_ID }}

@@ -15,12 +15,13 @@ if (process.env.FUNCTIONS_EMULATOR) {
 
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://numenor-freight-division.web.app',
-  'https://numenor-freight-division.firebaseapp.com',
-];
+// Base allowed origins (production)
+const allowedOrigins = ['https://numenor-freight-division.web.app', 'https://numenor-freight-division.firebaseapp.com'];
 
+// Add localhost only when running in the emulator
+if (process.env.FUNCTIONS_EMULATOR) {
+  allowedOrigins.push('http://localhost:5000');
+}
 app.use(
   cors({
     /**
@@ -43,7 +44,7 @@ app.use(
  * @param {object} req The Express request object. //enlist-ignore-line
  * @param {object} res The Express response object.
  */
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Hello from the Numenor API!');
 });
 
@@ -53,7 +54,7 @@ app.get('/', (req, res) => {
  * @param {object} req The Express request object.
  * @param {object} res The Express response object.
  */
-app.get('/auth/config', (req, res) => {
+app.get('/api/auth/config', (req, res) => {
   try {
     const clientId = process.env.DISCORD_CLIENT_ID;
     if (!clientId) {
@@ -76,7 +77,7 @@ app.get('/auth/config', (req, res) => {
  * @param {string} req.body.code The Discord authorization code.
  * @param {object} res The Express response object.
  */
-app.post('/auth/discord', async (req, res) => {
+app.post('/api/auth/discord', async (req, res) => {
   const { code } = req.body;
 
   if (!code) {
