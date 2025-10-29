@@ -50,9 +50,9 @@ export const DashboardProvider = ({ children }) => {
           const data = doc.data();
           return {
             id: doc.id,
-            destination: data.destination,
-            lastUpdated: data.lastUpdated?.toDate(), // Convert Firestore Timestamp to JS Date
-            currentStatus: data.status || 'Scheduled', // Default to 'Scheduled' if status is null/undefined
+            destination: `North:${data.port[1].north} East:${data.port[1].east}`,
+            lastUpdated: data.createdAt?.toDate(), // Convert Firestore Timestamp to JS Date
+            currentStatus: data.status, // Default to 'Scheduled' if status is null/undefined
           };
         });
         setShipments(userShipments);
