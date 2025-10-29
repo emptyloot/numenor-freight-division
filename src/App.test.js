@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import App from './App';
 import { MemoryRouter } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import { ManifestProvider } from './context/ShipmentManifestContext';
 
 // Mock the useAuth hook
 jest.mock('./context/AuthContext');
@@ -29,7 +30,9 @@ beforeEach(() => {
 test('Renders the main homepage title', () => {
   render(
     <MemoryRouter>
-      <App />
+      <ManifestProvider>
+        <App />
+      </ManifestProvider>
     </MemoryRouter>
   );
   // Check for the main H1 title on the homepage
@@ -43,7 +46,9 @@ test('Renders the main homepage title', () => {
 test('Navigates to About page when About Us link is clicked', async () => {
   render(
     <MemoryRouter>
-      <App />
+      <ManifestProvider>
+        <App />
+      </ManifestProvider>
     </MemoryRouter>
   );
 
@@ -61,7 +66,9 @@ test('Navigates to About page when About Us link is clicked', async () => {
 test('Render the About again page and navigates back to calculator', async () => {
   render(
     <MemoryRouter initialEntries={['/about']}>
-      <App />
+      <ManifestProvider>
+        <App />
+      </ManifestProvider>
     </MemoryRouter>
   );
 
@@ -78,7 +85,9 @@ test('Render the About again page and navigates back to calculator', async () =>
 test('Render the schedule page and navigates back to calculator', async () => {
   render(
     <MemoryRouter initialEntries={['/schedule']}>
-      <App />
+      <ManifestProvider>
+        <App />
+      </ManifestProvider>
     </MemoryRouter>
   );
 
