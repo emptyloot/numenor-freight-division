@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { firestore } from '../firebase/firebase';
+import { useAuth } from './AuthContext';
 
 const ManifestContext = createContext(null);
 
@@ -27,10 +30,18 @@ const DEFAULT_PORT = {
  * @returns {object} (JSX.Element) A Context.Provider that supplies the 'manifest' state object and the 'setManifest' function.
  */
 export const ManifestProvider = ({ children }) => {
-  const [manifest, setManifest] = useState({
+  const INITIAL_MANIFEST_STATE = {
     port: [DEFAULT_PORT, DEFAULT_PORT],
     cargo: [DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM],
-  });
+  };
+
+  const { currentUser } = useAuth();
+  const [manifest, setManifest] = useState(INITIAL_MANIFEST_STATE);
+
+  /** @description Resets the manifest state to its initial default values. */
+  const resetManifest = () => {
+    setManifest(INITIAL_MANIFEST_STATE);
+  };
 
   /**
    * Specialized function to immutably update a single field (name, east, or north)
@@ -96,11 +107,59 @@ export const ManifestProvider = ({ children }) => {
     });
   };
 
+  /**
+   * @description Validates the manifest and uploads it to Firestore as a new shipment document.
+   * Throws an error if the manifest is incomplete or if there is no authenticated user.
+   * @returns {Promise<string>} A promise that resolves with the new shipment document ID upon success.
+   */
+  const handleScheduleShipment = async () => {
+    if (!currentUser) {
+      throw new Error('You must be logged in to schedule a shipment.');
+    }
+
+    // 1. Validate manifest data
+    const { port, cargo } = manifest;
+
+    // Validate port coordinates
+    if (port[0]?.north === 0 && port[0]?.east === 0) {
+      throw new Error('Port of Origin coordinates cannot be (0, 0).');
+    }
+    if (port[1]?.north === 0 && port[1]?.east === 0) {
+      throw new Error('Final Destination coordinates cannot be (0, 0).');
+    }
+
+    // Validate that origin and destination are not the same coordinates
+    if (port[0]?.north === port[1]?.north && port[0]?.east === port[1]?.east) {
+      throw new Error('Port of Origin and Final Destination cannot be the same coordinates.');
+    }
+
+    const hasCargo = cargo.some((item) => item.name && item.quantity > 0);
+    if (!hasCargo) {
+      throw new Error('At least one cargo item with a quantity greater than zero is required.');
+    }
+
+    // 2. Prepare data for Firestore
+    const shipmentData = {
+      ...manifest,
+      userId: currentUser.uid,
+      status: 'scheduled',
+      createdAt: serverTimestamp(),
+    };
+
+    // 3. Upload to Firestore
+    const shipmentsCollectionRef = collection(firestore, 'shipments');
+    const docRef = await addDoc(shipmentsCollectionRef, shipmentData);
+    resetManifest();
+    return docRef.id;
+  };
+
   const manifestState = {
     manifest,
     setManifest,
     updatePortField,
     updateCargoField,
+    resetManifest,
+    handleScheduleShipment,
   };
 
   return <ManifestContext.Provider value={manifestState}>{children}</ManifestContext.Provider>;

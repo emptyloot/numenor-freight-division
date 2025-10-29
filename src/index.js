@@ -12,13 +12,13 @@ import { ManifestProvider } from './context/ShipmentManifestContext.js';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ManifestProvider>
-        <AuthProvider>
+    <AuthProvider>
+      <BrowserRouter>
+        <ManifestProvider>
           <App />
-        </AuthProvider>
-      </ManifestProvider>
-    </BrowserRouter>
+        </ManifestProvider>
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 );
 reportWebVitals();

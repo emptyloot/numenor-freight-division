@@ -6,5 +6,15 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.uid == userId;
       allow write: if false; // Nobody can write to user documents from the client
     }
+
+    // Rules for the 'shipments' collection
+    match /shipments/{shipmentId} {
+      // Allow a logged-in user to create a new shipment document
+      // if the 'userId' field in the new document matches their own user ID.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      // Allow a user to read their own shipment documents.
+      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
+
+    }
   }
 }
