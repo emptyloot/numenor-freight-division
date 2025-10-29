@@ -1,3 +1,6 @@
+import InputLocation from '../inputLocation/InputLocation';
+import InputCargo from './InputCargo';
+
 /**
 @description Renders the protected page for scheduling a new shipment.
  This component displays the main "Shipment Manifest" form where
@@ -14,122 +17,15 @@ function CreateShipment() {
           <h2>Shipment Manifest</h2>
           <form className="space-y-6">
             <fieldset className="space-y-4">
-              <div>
-                <label htmlFor="tiles" className="block text-left mb-1">
-                  Number of Tiles:
-                </label>
-                <input
-                  id="tiles"
-                  type="number"
-                  min="0"
-                  className="w-full p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-              </div>
-              <div>
-                <label htmlFor="start" className="block text-left mb-1">
-                  Port of Origin:
-                </label>
-                <input
-                  id="start"
-                  type="text"
-                  className="w-full p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-              </div>
-              <div>
-                <label htmlFor="end" className="block text-left mb-1">
-                  Final Destination:
-                </label>
-                <input
-                  id="end"
-                  type="text"
-                  className="w-full p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-              </div>
+              <InputLocation baseId="origin" label="Port of Origin" portIndex={0} />
+              <InputLocation baseId="destination" label="Final Destination" portIndex={1} />
             </fieldset>
             <fieldset className="space-y-4">
               <legend>Cargo Manifest</legend>
-              <div className="flex flex-wrap md:flex-nowrap gap-4 items-end">
-                <label htmlFor="cargo1name" className="block text-left mb-1 whitespace-nowrap">
-                  Cargo Hold 1:
-                </label>
-                <input
-                  id="cargo1name"
-                  type="text"
-                  className="w-full p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-                <label htmlFor="cargo1quant" className="block text-left mb-1">
-                  Quantity:
-                </label>
-                <input
-                  id="cargo1quant"
-                  type="number"
-                  min="0"
-                  max="100"
-                  className="w-half p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-              </div>
-              <div className="flex flex-wrap md:flex-nowrap gap-4 items-end">
-                <label htmlFor="cargo2name" className="block text-left mb-1 whitespace-nowrap">
-                  Cargo Hold 2:
-                </label>
-                <input
-                  id="cargo2name"
-                  type="text"
-                  className="w-full p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-                <label htmlFor="cargo2quant" className="block text-left mb-1">
-                  Quantity:
-                </label>
-                <input
-                  id="cargo2quant"
-                  type="number"
-                  min="0"
-                  max="100"
-                  className="w-half p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-              </div>
-              <div className="flex flex-wrap md:flex-nowrap gap-4 items-end">
-                <label htmlFor="cargo3name" className="block text-left mb-1 whitespace-nowrap">
-                  Cargo Hold 3:
-                </label>
-                <input
-                  id="cargo3name"
-                  type="text"
-                  className="w-full p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-
-                <label htmlFor="cargo3quant" className="block text-left mb-1">
-                  Quantity:
-                </label>
-                <input
-                  id="cargo3quant"
-                  type="number"
-                  min="0"
-                  max="100"
-                  className="w-half p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-              </div>
-              <div className="flex flex-wrap md:flex-nowrap gap-4 items-end">
-                <label htmlFor="cargo4name" className="block text-left mb-1 whitespace-nowrap">
-                  Cargo Hold 4:
-                </label>
-                <input
-                  id="cargo4name"
-                  type="text"
-                  className="w-full p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-
-                <label htmlFor="cargo4quant" className="block text-left mb-1">
-                  Quantity:
-                </label>
-                <input
-                  id="cargo4quant"
-                  type="number"
-                  min="0"
-                  max="100"
-                  className="w-half p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
-                />
-              </div>
+              <InputCargo baseId="cargo1" cargoIndex={0} />
+              <InputCargo baseId="cargo2" cargoIndex={1} />
+              <InputCargo baseId="cargo3" cargoIndex={2} />
+              <InputCargo baseId="cargo4" cargoIndex={3} />
             </fieldset>
           </form>
         </div>
