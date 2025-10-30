@@ -34,6 +34,12 @@ export const AuthProvider = ({ children }) => {
     signOut(auth);
   };
 
+  /**
+   * @description Subscribes to Firebase authentication state changes. When a user logs in,
+   * it fetches their profile from Firestore and merges it with the auth data. When they
+   * log out, it clears the user state. It also manages the initial loading state.
+   * The subscription is automatically cleaned up on component unmount.
+   */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -60,6 +66,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     currentUser,
+    isAuthenticated: !!currentUser,
     logout,
   };
 

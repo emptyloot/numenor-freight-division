@@ -5,10 +5,10 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter and useNavigate
-
 import Homepage from './Homepage'; // Import the component to test
 import Calculator from '../../utils/Calculator'; // Import the function to mock
 import { useAuth } from '../../context/AuthContext';
+import { ManifestProvider } from '../../context/ShipmentManifestContext';
 
 // --- Mock Dependencies ---
 
@@ -50,9 +50,9 @@ describe('Homepage Component', () => {
   test('renders main elements correctly', () => {
     render(
       <MemoryRouter>
-        {' '}
-        {/* Needed because component uses useNavigate */}
-        <Homepage />
+        <ManifestProvider>
+          <Homepage />
+        </ManifestProvider>
       </MemoryRouter>
     );
 
@@ -63,8 +63,8 @@ describe('Homepage Component', () => {
     expect(screen.getByRole('heading', { name: /"Instant Quote Calculator"/i })).toBeInTheDocument();
 
     // Check input labels
-    expect(screen.getByLabelText(/Enter TP Energy:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Enter Number of Tiles:/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Port of Origin:/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Final Destination:/i)).toBeInTheDocument();
 
     // Check initial quote display
     expect(screen.getByText(/--- Hex/i)).toBeInTheDocument();
@@ -82,25 +82,39 @@ describe('Homepage Component', () => {
 
     render(
       <MemoryRouter>
-        <Homepage />
+        <ManifestProvider>
+          <Homepage />
+        </ManifestProvider>
       </MemoryRouter>
     );
 
     // Get input fields by their labels
-    const energyInput = screen.getByLabelText(/Enter TP Energy:/i);
-    const tilesInput = screen.getByLabelText(/Enter Number of Tiles:/i);
+    const northInputs = screen.getAllByLabelText(/North \(N\)/i);
+    const originNorthInput = northInputs[0];
+    const destinationNorthInput = northInputs[1];
 
     // Simulate user typing
-    await userEvent.type(energyInput, '10');
-    await userEvent.type(tilesInput, '12');
+    await userEvent.type(originNorthInput, '10');
+    await userEvent.type(destinationNorthInput, '12');
 
     // Verify inputs have the typed values
-    expect(energyInput).toHaveValue(10);
-    expect(tilesInput).toHaveValue(12);
+    expect(originNorthInput).toHaveValue(10);
+    expect(destinationNorthInput).toHaveValue(12);
 
     // Verify the mock Calculator function was called correctly
     // Note: It gets called multiple times due to useEffect, check the last call
-    expect(Calculator).toHaveBeenLastCalledWith('10', '12'); // Inputs pass strings
+    expect(Calculator).toHaveBeenLastCalledWith({
+      port: [
+        { name: '', north: 10, east: 0 },
+        { name: '', north: 12, east: 0 },
+      ],
+      cargo: [
+        { name: '', quantity: 0 },
+        { name: '', quantity: 0 },
+        { name: '', quantity: 0 },
+        { name: '', quantity: 0 },
+      ],
+    }); // Inputs pass strings
 
     // Verify the quote display is updated with the mock return value
     expect(screen.getByText(/7,200 Hex/i)).toBeInTheDocument();
@@ -118,7 +132,9 @@ describe('Homepage Component', () => {
     test('shows "Schedule This Delivery" button and not login button', () => {
       render(
         <MemoryRouter>
-          <Homepage />
+          <ManifestProvider>
+            <Homepage />
+          </ManifestProvider>
         </MemoryRouter>
       );
       expect(screen.getByRole('button', { name: /Schedule This Delivery/i })).toBeInTheDocument();
@@ -128,7 +144,9 @@ describe('Homepage Component', () => {
     test('calls navigate when schedule button is clicked', async () => {
       render(
         <MemoryRouter>
-          <Homepage />
+          <ManifestProvider>
+            <Homepage />
+          </ManifestProvider>
         </MemoryRouter>
       );
       const scheduleButton = screen.getByRole('button', { name: /Schedule This Delivery/i });
@@ -147,7 +165,13 @@ describe('Homepage Component', () => {
     });
 
     test('shows "Login to Schedule" button and not schedule button', () => {
-      render(<Homepage />, { wrapper: MemoryRouter });
+      render(
+        <MemoryRouter>
+          <ManifestProvider>
+            <Homepage />
+          </ManifestProvider>
+        </MemoryRouter>
+      );
       expect(screen.getByRole('button', { name: /Login to Schedule/i })).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /Schedule This Delivery/i })).not.toBeInTheDocument();
     });
