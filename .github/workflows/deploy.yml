@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - staging
 
 jobs:
   # This workflow contains a single job called "build_and_deploy"
@@ -17,9 +16,9 @@ jobs:
     # Set environment variables based on the branch
     env:
       # Sets project ID based on branch
-      FIREBASE_PROJECT_ID: ${{ github.ref == 'refs/heads/main' && 'numenor-freight-division' || 'numenor-freight-staging' }}
+      FIREBASE_PROJECT_ID: 'numenor-freight-division'
       # Sets the correct service account secret based on branch
-      FIREBASE_SERVICE_ACCOUNT: ${{ github.ref == 'refs/heads/main' && secrets.FIREBASE_SERVICE_ACCOUNT_NUMENOR_FREIGHT || secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUMENOR_FREIGHT }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:

@@ -1,0 +1,58 @@
+name: Deploy to Staging on Push
+
+# Controls when the action will run.
+# This workflow runs on pushes to the "staging" branch.
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  # This workflow contains a single job called "build_and_deploy_staging"
+  build_and_deploy_staging:
+    # The name of the job, and the environment it runs in
+    name: Build and Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging # Use secrets from the "staging" GitHub Environment
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # 1. Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # 2. Sets up the Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      # 3. Installs dependencies
+      - name: Install Dependencies
+        run: npm ci
+
+      # 4. Analyzes the code for style consistency and potential errors
+      - name: Lint Code
+        run: npm run lint
+
+      # 5. Executes the test suite
+      - name: Run Unit & Integration Tests
+        run: npm test
+
+      # 6. Builds the React application for production
+      - name: Build
+        run: npm run build
+
+      # 7. Install function dependencies
+      - name: Install Function Dependencies
+        run: cd functions && npm ci
+
+      # 8. Authenticate to Google Cloud using the staging secret
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}'
+
+      # 9. Deploy to Firebase Staging
+      - name: Deploy to Firebase Staging
+        run: |
+          npx firebase deploy --only functions,hosting:live --project numenor-freight-staging
