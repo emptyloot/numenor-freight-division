@@ -13,15 +13,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
 
-jest.mock('firebase/auth', () => ({
-  signInWithCustomToken: jest.fn(),
-}));
-
 jest.mock('axios');
-
-jest.mock('../../firebase/firebase', () => ({
-  auth: {}, // Mock the auth object
-}));
 
 describe('AuthCallback', () => {
   const mockNavigate = jest.fn();

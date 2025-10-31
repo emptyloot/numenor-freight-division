@@ -9,4 +9,3 @@ node_modules/
 Ignore default Create React App boilerplate files
 
 src/reportWebVitals.js
-src/setupTests.js

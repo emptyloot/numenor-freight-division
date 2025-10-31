@@ -15,8 +15,11 @@ if (process.env.FUNCTIONS_EMULATOR) {
 
 const app = express();
 
+const webOrigin = process.env.ALLOWED_ORIGIN_WEB;
+const fbOrigin = process.env.ALLOWED_ORIGIN_FB; // eslint-disable-line
+
 // Base allowed origins (production)
-const allowedOrigins = ['https://numenor-freight-division.web.app', 'https://numenor-freight-division.firebaseapp.com'];
+const allowedOrigins = [webOrigin, fbOrigin]; // eslint-disable-line
 
 // Add localhost only when running in the emulator
 if (process.env.FUNCTIONS_EMULATOR) {
