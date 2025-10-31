@@ -55,4 +55,4 @@ jobs:
       # 9. Deploy to Firebase Staging
       - name: Deploy to Firebase Staging
         run: |
-          npx firebase deploy --only functions,hosting:live --project numenor-freight-staging
+          npx firebase deploy --only functions,hosting --project numenor-freight-staging
