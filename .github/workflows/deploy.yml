@@ -60,4 +60,4 @@ jobs:
       # 9. Deploy to Firebase using local npx
       - name: Deploy to Firebase
         run: |
-          npx firebase deploy --only functions,hosting:live --project ${{ env.FIREBASE_PROJECT_ID }}
+          npx firebase deploy --only functions,hosting --project ${{ env.FIREBASE_PROJECT_ID }}
