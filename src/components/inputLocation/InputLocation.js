@@ -30,22 +30,7 @@ const LocationInput = ({ baseId, label, portIndex }) => {
       <label htmlFor={`${baseId}-E`} className="col-span-2 text-right font-bold text-lg whitespace-nowrap">
         {label}:
       </label>
-      {/* 2. East Coordinate Input Group */}
-      <div className="col-span-2">
-        <label htmlFor={`${baseId}-E`} className={labelClass}>
-          East (E)
-        </label>
-        <input
-          id={`${baseId}-E`}
-          value={currentPort.east}
-          onChange={(e) => handleChange('east', e.target.value)}
-          type="number"
-          className={inputClass}
-          min="0"
-          max="7800"
-        />
-      </div>
-      {/* 3. North Coordinate Input Group */}
+      {/* 2. North Coordinate Input Group */}
       <div className="col-span-2">
         <label htmlFor={`${baseId}-N`} className={labelClass}>
           North (N)
@@ -54,6 +39,21 @@ const LocationInput = ({ baseId, label, portIndex }) => {
           value={currentPort.north}
           onChange={(e) => handleChange('north', e.target.value)}
           id={`${baseId}-N`}
+          type="number"
+          className={inputClass}
+          min="0"
+          max="7800"
+        />
+      </div>
+      {/* 3. East Coordinate Input Group */}
+      <div className="col-span-2">
+        <label htmlFor={`${baseId}-E`} className={labelClass}>
+          East (E)
+        </label>
+        <input
+          id={`${baseId}-E`}
+          value={currentPort.east}
+          onChange={(e) => handleChange('east', e.target.value)}
           type="number"
           className={inputClass}
           min="0"
