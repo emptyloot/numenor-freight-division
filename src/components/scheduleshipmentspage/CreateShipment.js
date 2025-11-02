@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useManifest } from '../../context/ShipmentManifestContext';
+import Calculator from '../../utils/Calculator';
 import InputLocation from '../inputLocation/InputLocation';
 import InputCargo from './InputCargo';
 
@@ -12,6 +13,8 @@ import InputCargo from './InputCargo';
  @returns {object} (JSX.element) React component for the shipment creation page.
  */
 function CreateShipment() {
+  const { manifest } = useManifest();
+  const [quote, setQuote] = useState(0);
   const { handleScheduleShipment } = useManifest();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
@@ -42,6 +45,12 @@ function CreateShipment() {
     }
   };
 
+  useEffect(() => {
+    // Calculate the quote whenever the manifest (start/end locations) changes
+    const hexCost = Calculator(manifest);
+    setQuote(hexCost);
+  }, [manifest]);
+
   return (
     <main className="container mx-auto p-4 text-center text-[#EDF2F4]">
       <div className="max-w-2xl mx-auto">
@@ -64,6 +73,11 @@ function CreateShipment() {
             {error && <div className="text-red-400 bg-red-900/50 p-3 rounded-lg">{error}</div>}
 
             <fieldset>
+              <div className="pt-4">
+                <div className="w-full p-3 rounded-lg bg-gray-700/60 text-x1 font-bold text-[#ffc107]">
+                  {quote > 0 ? `${quote.toLocaleString()} Hex` : '--- Hex'}
+                </div>
+              </div>
               <button
                 type="submit"
                 disabled={isLoading}
