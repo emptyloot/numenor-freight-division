@@ -19,9 +19,10 @@ Programmatically navigates the user to the '/schedule' route to fill out the shi
         <InstantQuoteCalculator />
         {/*Steps to follow */}
         <div className="mt-24 text-lg space-y-2">
-          <p>Step 1: Get an instant and transparent quote</p>
-          <p>Step 2: Schedule your delivery with our secure system</p>
-          <p>Step 3: Track your cargo's progress in your dashboard</p>
+          <p>Getting your coordinates:</p>
+          <p>Step 1: Visit Bitjita.com/claims and look up your pickup and destination settlements.</p>
+          <p>Step 2: Copy the N (North) and E (East) values for each.</p>
+          <p>Step 3: Paste them below to calculate your route.</p>
         </div>
       </div>
     </main>
