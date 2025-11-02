@@ -11,14 +11,9 @@ jobs:
   # This workflow contains a single job called "build_and_deploy"
   build_and_deploy:
     # The type of runner that the job will run on
+    name: Build and Deploy to Production
     runs-on: ubuntu-latest
-
-    # Set environment variables based on the branch
-    env:
-      # Sets project ID based on branch
-      FIREBASE_PROJECT_ID: 'numenor-freight-division'
-      # Sets the correct service account secret based on branch
-      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUMENOR_FREIGHT }}
+    environment: production
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -42,22 +37,36 @@ jobs:
       # 5. Executes the test suite defined in package.json
       - name: Run Unit & Integration Tests 
         run: npm test
-        
-      # 6. Builds the React application for production
+
+      # 6. Create .env file
+      - name: Create .env file
+        run: |
+          echo REACT_APP_FIREBASE_API_KEY=${{ vars.REACT_APP_FIREBASE_API_KEY }} >> .env
+          echo REACT_APP_FIREBASE_AUTH_DOMAIN=${{ vars.REACT_APP_FIREBASE_AUTH_DOMAIN }} >> .env
+          echo REACT_APP_FIREBASE_PROJECT_ID=${{ vars.REACT_APP_FIREBASE_PROJECT_ID }} >> .env
+          echo REACT_APP_FIREBASE_STORAGE_BUCKET=${{ vars.REACT_APP_FIREBASE_STORAGE_BUCKET }} >> .env
+          echo REACT_APP_FIREBASE_MESSAGING_SENDER_ID=${{ vars.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }} >> .env
+          echo REACT_APP_FIREBASE_APP_ID=${{ vars.REACT_APP_FIREBASE_APP_ID }} >> .env
+          echo ALLOWED_ORIGIN_WEB=${{ vars.ALLOWED_ORIGIN_WEB }} >> functions/.env
+          echo ALLOWED_ORIGIN_FB=${{ vars.ALLOWED_ORIGIN_FB }} >> functions/.env
+          echo DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }} >> functions/.env
+          echo DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }} >> functions/.env
+
+      # 7. Builds the React application for production
       - name: Build
         run: npm run build
 
-      # 7. Install function dependencies
+      # 8. Install function dependencies
       - name: Install Function Dependencies
         run: cd functions && npm ci
       
-      # 8. Authenticate to Google Cloud
+      # 9. Authenticate to Google Cloud
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: '${{ env.FIREBASE_SERVICE_ACCOUNT }}'
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUMENOR_FREIGHT }}'
 
-      # 9. Deploy to Firebase using local npx
+      # 10. Deploy to Firebase using local npx
       - name: Deploy to Firebase
         run: |
-          npx firebase deploy --only functions,hosting --project ${{ env.FIREBASE_PROJECT_ID }}
+          npx firebase deploy --only functions,hosting,firestore --project numenor-freight-division
