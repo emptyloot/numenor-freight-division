@@ -47,6 +47,10 @@ jobs:
           echo REACT_APP_FIREBASE_STORAGE_BUCKET=${{ vars.REACT_APP_FIREBASE_STORAGE_BUCKET }} >> .env
           echo REACT_APP_FIREBASE_MESSAGING_SENDER_ID=${{ vars.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }} >> .env
           echo REACT_APP_FIREBASE_APP_ID=${{ vars.REACT_APP_FIREBASE_APP_ID }} >> .env
+          echo ALLOWED_ORIGIN_WEB=${{ vars.ALLOWED_ORIGIN_WEB }} >> functions/.env
+          echo ALLOWED_ORIGIN_FB=${{ vars.ALLOWED_ORIGIN_FB }} >> functions/.env
+          echo DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }} >> functions/.env
+          echo DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }} >> functions/.env
 
       # 7. Builds the React application for production
       - name: Build
