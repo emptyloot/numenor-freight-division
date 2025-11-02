@@ -70,7 +70,7 @@ describe('Homepage Component', () => {
     expect(screen.getByText(/--- Hex/i)).toBeInTheDocument();
 
     // Check steps section (simple check for one step)
-    expect(screen.getByText(/Step 1: Get an instant and transparent quote/i)).toBeInTheDocument();
+    expect(screen.getByText(/Getting your coordinates:/i)).toBeInTheDocument();
   });
 
   /**
