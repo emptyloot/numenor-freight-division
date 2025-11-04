@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ShipmentCard from './ShipmentCard';
+import { MemoryRouter } from 'react-router-dom';
 
 /**
  * @description Test suite for the ShipmentCard component.
@@ -17,9 +18,14 @@ describe('ShipmentCard', () => {
       lastUpdated: new Date('2023-10-27T10:00:00Z'),
     };
 
-    render(<ShipmentCard shipment={mockShipment} />);
+    render(
+      <MemoryRouter>
+        <ShipmentCard shipment={mockShipment} />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByText(/Shipment to Port Test/i)).toBeInTheDocument();
+    expect(screen.getByText(/Shipment ID: ship123/i)).toBeInTheDocument();
+    expect(screen.getByText(/Destination:/i)).toBeInTheDocument();
     expect(screen.getByText(/Status:/i)).toBeInTheDocument();
     expect(screen.getByText(/Scheduled/i)).toBeInTheDocument();
     expect(screen.getByText(/Last Updated:/i)).toBeInTheDocument();
@@ -37,9 +43,14 @@ describe('ShipmentCard', () => {
       lastUpdated: null,
     };
 
-    render(<ShipmentCard shipment={mockShipment} />);
+    render(
+      <MemoryRouter>
+        <ShipmentCard shipment={mockShipment} />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByText(/Shipment to N\/A/i)).toBeInTheDocument();
+    expect(screen.getByText(/Shipment ID: ship456/i)).toBeInTheDocument();
+    expect(screen.getByText(/Destination:/i)).toBeInTheDocument();
     expect(screen.getByText(/Status:/i)).toBeInTheDocument();
     expect(screen.getByText(/Pending/i)).toBeInTheDocument();
     expect(screen.getByText(/Last Updated:/i)).toBeInTheDocument();

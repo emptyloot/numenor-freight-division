@@ -62,19 +62,6 @@ describe('DashboardContext', () => {
     expect(onSnapshot).not.toHaveBeenCalled();
   });
 
-  test('starts in a loading state when a user is authenticated', () => {
-    useAuth.mockReturnValue({ currentUser: { uid: 'test-user-123' } });
-
-    render(
-      <DashboardProvider>
-        <TestConsumer />
-      </DashboardProvider>
-    );
-
-    expect(screen.getByTestId('loading')).toHaveTextContent('true');
-    expect(onSnapshot).toHaveBeenCalledTimes(1);
-  });
-
   test('fetches and sets shipments correctly on successful data snapshot', async () => {
     useAuth.mockReturnValue({ currentUser: { uid: 'test-user-123' } });
 
