@@ -22,7 +22,11 @@ function Header() {
         <Link to="/">
           <Logo />
         </Link>
-
+        {currentUser && (
+          <div className="border-2 border-[#FFC107] text-[#FFC107] px-4 py-2 rounded-full hover:bg-[#FFC107] hover:text-[#0B2545] transition-colors whitespace-nowrap">
+            <Link to="/dashboard">Dashboard</Link>
+          </div>
+        )}
         <div className="hidden md:flex items-center space-x-4">
           <Link
             to={secondaryLink.to}

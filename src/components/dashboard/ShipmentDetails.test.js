@@ -28,7 +28,10 @@ const mockShipment = {
   id: 'ship123',
   status: 'in-transit',
   paid: false,
-  port: [null, { north: '123', east: '456' }],
+  port: [
+    { north: '321', east: '654' },
+    { north: '123', east: '456' },
+  ],
   createdAt: {
     /** @returns {Date} A Date object representing the creation date. */
     toDate: () => new Date('2023-10-28T12:00:00Z'),
