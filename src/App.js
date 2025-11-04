@@ -8,6 +8,7 @@ import CreateShipment from './components/scheduleshipmentspage/CreateShipment.js
 import ProtectedRoute from './components/auth/ProtectedRoute.js';
 import AuthCallback from './components/auth/AuthCallback.js';
 import Dashboard from './components/dashboard/Dashboard.js';
+import ShipmentDetails from './components/dashboard/ShipmentDetails.js';
 
 /**
 @description The main application component that assembles the page layout and defines the routes.
@@ -34,6 +35,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shipment/:shipmentId"
+          element={
+            <ProtectedRoute>
+              <ShipmentDetails />
             </ProtectedRoute>
           }
         />
