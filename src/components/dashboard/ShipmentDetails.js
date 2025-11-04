@@ -132,6 +132,10 @@ const ShipmentDetails = () => {
           <span className="font-semibold">Paid:</span> {shipment.paid ? 'Yes' : 'No'}
         </p>
         <p>
+          <span className="font-semibold">Origin:</span> North:{shipment.port[0].north} East:
+          {shipment.port[0].east}
+        </p>
+        <p>
           <span className="font-semibold">Destination:</span> North:{shipment.port[1].north} East:
           {shipment.port[1].east}
         </p>
