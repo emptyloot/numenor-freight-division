@@ -98,7 +98,9 @@
             "cors",
             "unmount",
             "uid",
-            "req"
+            "req",
+            "Cancelled",
+            "Unassign"
           ]
         }
       ]
