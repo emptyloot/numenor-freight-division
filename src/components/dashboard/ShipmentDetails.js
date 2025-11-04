@@ -4,6 +4,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../firebase/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
+import Calculator from '../../utils/Calculator';
 
 /**
  * @description Displays the detailed information of a specific shipment, identified by its ID from the URL parameters.
@@ -114,6 +115,7 @@ const ShipmentDetails = () => {
   if (!shipment) return null;
 
   const canUpdate = currentUser && ['staff', 'driver'].includes(currentUser.role);
+  const quote = Calculator(shipment);
 
   return (
     <main className="container mx-auto p-4 text-[#EDF2F4]">
@@ -127,6 +129,9 @@ const ShipmentDetails = () => {
         </p>
         <p>
           <span className="font-semibold">Status:</span> {shipment.status}
+        </p>
+        <p>
+          <span className="font-semibold">Quote:</span> {quote.toLocaleString()} Hex
         </p>
         <p>
           <span className="font-semibold">Paid:</span> {shipment.paid ? 'Yes' : 'No'}
