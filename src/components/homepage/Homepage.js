@@ -20,7 +20,18 @@ Programmatically navigates the user to the '/schedule' route to fill out the shi
         {/*Steps to follow */}
         <div className="mt-24 text-lg space-y-2">
           <p>Getting your coordinates:</p>
-          <p>Step 1: Visit Bitjita.com/claims and look up your pickup and destination settlements.</p>
+          <p>
+            Step 1: Visit{' '}
+            <a
+              href="https://bitjita.com/claims"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:underline"
+            >
+              Bitjita.com/claims
+            </a>{' '}
+            and look up your pickup and destination settlements.
+          </p>
           <p>Step 2: Copy the N (North) and E (East) values for each.</p>
           <p>Step 3: Paste them below to calculate your route.</p>
         </div>

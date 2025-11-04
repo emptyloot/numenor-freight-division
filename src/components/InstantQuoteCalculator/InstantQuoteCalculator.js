@@ -40,9 +40,10 @@ const InstantQuoteCalculator = () => {
         <LocationInput baseId="end" label="Final Destination" portIndex={1} />
         <div className="pt-4">
           <div className="w-full p-3 rounded-lg bg-gray-700/60 text-x1 font-bold text-[#ffc107]">
-            {quote > 0 ? `${quote.toLocaleString()} Hex` : '--- Hex'}
+            {quote > 0 ? `${quote.toLocaleString()} Hex +#*` : '--- Hex +#*'}
           </div>
         </div>
+        <p>*additional cost is calculated based on outbound teleport cost from Armenelos</p>
         <div className="pt-6">
           {currentUser ? (
             <button
