@@ -143,6 +143,8 @@ export const ManifestProvider = ({ children }) => {
       ...manifest,
       userId: currentUser.uid,
       status: 'scheduled',
+      paid: false, // Shipments are not paid by default
+      driverId: null, // No driver assigned on creation
       createdAt: serverTimestamp(),
     };
 

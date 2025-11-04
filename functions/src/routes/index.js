@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
 
-const authController = require('../controllers/authController');
+const authController = require('./authController');
 // Initialize Firebase Admin SDK
 if (process.env.FUNCTIONS_EMULATOR) {
   admin.initializeApp({
