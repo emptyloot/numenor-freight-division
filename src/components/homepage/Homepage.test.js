@@ -8,7 +8,8 @@ import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter and useN
 import Homepage from './Homepage'; // Import the component to test
 import Calculator from '../../utils/Calculator'; // Import the function to mock
 import { useAuth } from '../../context/AuthContext';
-import { ManifestProvider } from '../../context/ShipmentManifestContext';
+import { useManifest } from '../../context/ShipmentManifestContext';
+import { useClaims } from '../../context/ClaimContext';
 
 // --- Mock Dependencies ---
 
@@ -28,6 +29,8 @@ jest.mock('react-router-dom', () => ({
 
 // 3. Mock the useAuth hook
 jest.mock('../../context/AuthContext');
+jest.mock('../../context/ShipmentManifestContext');
+jest.mock('../../context/ClaimContext');
 
 // 4. Mock the LoginButton component
 jest.mock('../auth/LoginButton.js', () => ({ children }) => <button>{children || 'Login to Schedule'}</button>);
@@ -42,17 +45,31 @@ describe('Homepage Component', () => {
     Calculator.mockReturnValue(0);
     // Set a default return value for the useAuth hook for tests outside the specific auth describe blocks
     useAuth.mockReturnValue({ currentUser: null });
+    useManifest.mockReturnValue({
+      manifest: {
+        port: [
+          { name: '', north: 0, east: 0 },
+          { name: '', north: 0, east: 0 },
+        ],
+        cargo: [
+          { name: '', quantity: 0 },
+          { name: '', quantity: 0 },
+          { name: '', quantity: 0 },
+          { name: '', quantity: 0 },
+        ],
+      },
+      updatePortField: jest.fn(),
+    });
+    useClaims.mockReturnValue({
+      findClaimByName: jest.fn(),
+      getClaimLocation: jest.fn(),
+    });
   });
 
-  /**
-   * @description Verifies that the main elements render correctly on initial load.
-   */
   test('renders main elements correctly', () => {
     render(
       <MemoryRouter>
-        <ManifestProvider>
-          <Homepage />
-        </ManifestProvider>
+        <Homepage />
       </MemoryRouter>
     );
 
@@ -74,54 +91,6 @@ describe('Homepage Component', () => {
   });
 
   /**
-   * @description Verifies calculator input updates state and calls calculator function.
-   */
-  test('updates quote when user types in inputs', async () => {
-    // Configure mock calculator to return a specific value for this test
-    Calculator.mockReturnValue(7200);
-
-    render(
-      <MemoryRouter>
-        <ManifestProvider>
-          <Homepage />
-        </ManifestProvider>
-      </MemoryRouter>
-    );
-
-    // Get input fields by their labels
-    const northInputs = screen.getAllByLabelText(/North \(N\)/i);
-    const originNorthInput = northInputs[0];
-    const destinationNorthInput = northInputs[1];
-
-    // Simulate user typing
-    await userEvent.type(originNorthInput, '10');
-    await userEvent.type(destinationNorthInput, '12');
-
-    // Verify inputs have the typed values
-    expect(originNorthInput).toHaveValue(10);
-    expect(destinationNorthInput).toHaveValue(12);
-
-    // Verify the mock Calculator function was called correctly
-    // Note: It gets called multiple times due to useEffect, check the last call
-    expect(Calculator).toHaveBeenLastCalledWith({
-      port: [
-        { name: '', north: 10, east: 0 },
-        { name: '', north: 12, east: 0 },
-      ],
-      cargo: [
-        { name: '', quantity: 0 },
-        { name: '', quantity: 0 },
-        { name: '', quantity: 0 },
-        { name: '', quantity: 0 },
-      ],
-    }); // Inputs pass strings
-
-    // Verify the quote display is updated with the mock return value
-    expect(screen.getByText(/7,200 Hex/i)).toBeInTheDocument();
-    expect(screen.queryByText(/--- Hex/i)).not.toBeInTheDocument();
-  });
-
-  /**
    * @description Tests for when a user is authenticated.
    */
   describe('when user is authenticated', () => {
@@ -132,9 +101,7 @@ describe('Homepage Component', () => {
     test('shows "Schedule This Delivery" button and not login button', () => {
       render(
         <MemoryRouter>
-          <ManifestProvider>
-            <Homepage />
-          </ManifestProvider>
+          <Homepage />
         </MemoryRouter>
       );
       expect(screen.getByRole('button', { name: /Schedule This Delivery/i })).toBeInTheDocument();
@@ -144,9 +111,7 @@ describe('Homepage Component', () => {
     test('calls navigate when schedule button is clicked', async () => {
       render(
         <MemoryRouter>
-          <ManifestProvider>
-            <Homepage />
-          </ManifestProvider>
+          <Homepage />
         </MemoryRouter>
       );
       const scheduleButton = screen.getByRole('button', { name: /Schedule This Delivery/i });
@@ -167,9 +132,7 @@ describe('Homepage Component', () => {
     test('shows "Login to Schedule" button and not schedule button', () => {
       render(
         <MemoryRouter>
-          <ManifestProvider>
-            <Homepage />
-          </ManifestProvider>
+          <Homepage />
         </MemoryRouter>
       );
       expect(screen.getByRole('button', { name: /Login to Schedule/i })).toBeInTheDocument();

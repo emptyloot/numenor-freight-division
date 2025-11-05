@@ -1,9 +1,20 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { ManifestProvider } from '../../context/ShipmentManifestContext';
 import CreateShipment from './CreateShipment';
 import { useAuth } from '../../context/AuthContext';
+import { useClaims } from '../../context/ClaimContext';
+
+// Mock the useNavigate hook from react-router-dom
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  /**
+   * @description Mocks the `useNavigate` hook from `react-router-dom` to return a mock navigation function.
+   * @returns {object} A mock function that records navigation calls.
+   */
+  useNavigate: () => mockNavigate,
+}));
 
 // Mock the useManifest hook
 const mockHandleScheduleShipment = jest.fn();
@@ -32,6 +43,7 @@ jest.mock('../../context/ShipmentManifestContext', () => ({
 
 // Mock the useAuth hook
 jest.mock('../../context/AuthContext');
+jest.mock('../../context/ClaimContext');
 
 /**
  * @description Test suite for the CreateShipment component.
@@ -42,20 +54,23 @@ describe('CreateShipment', () => {
    */
   beforeEach(() => {
     mockHandleScheduleShipment.mockClear();
+    mockNavigate.mockClear();
     useAuth.mockReturnValue({
       currentUser: { uid: 'test-uid', email: 'test@example.com' },
+    });
+    useClaims.mockReturnValue({
+      findClaimByName: jest.fn(),
+      getClaimLocation: jest.fn(),
     });
   });
 
   /**
    * @description Verifies that the form renders and that a successful submission calls the handleScheduleShipment function.
    */
-  test('renders the form and submits successfully', async () => {
+  test('renders the form and navigates on successful submission', async () => {
     render(
       <MemoryRouter>
-        <ManifestProvider>
-          <CreateShipment />
-        </ManifestProvider>
+        <CreateShipment />
       </MemoryRouter>
     );
 
@@ -63,6 +78,7 @@ describe('CreateShipment', () => {
     await fireEvent.submit(screen.getByRole('button', { name: /schedule shipment/i }));
 
     expect(mockHandleScheduleShipment).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/dashboard');
   });
 
   /**
@@ -71,9 +87,7 @@ describe('CreateShipment', () => {
   test('displays an error message on submission failure', async () => {
     render(
       <MemoryRouter>
-        <ManifestProvider>
-          <CreateShipment />
-        </ManifestProvider>
+        <CreateShipment />
       </MemoryRouter>
     );
 
