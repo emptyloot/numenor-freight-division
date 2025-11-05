@@ -112,7 +112,7 @@ describe('ShipmentDetails', () => {
   });
 
   test('allows a driver to see update form and assign themselves', async () => {
-    useAuth.mockReturnValue({ currentUser: { role: 'driver', uid: 'driver1', username: 'Test Driver' } });
+    useAuth.mockReturnValue({ currentUser: { role: 'driver', uid: 'driver1', global_name: 'Test Driver' } });
     firestore.onSnapshot.mockImplementation((ref, callback) => {
       callback({
         /** @returns {boolean} Always returns true, indicating the document exists. */

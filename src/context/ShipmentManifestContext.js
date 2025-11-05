@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
 import { useAuth } from './AuthContext';
+import Calculator from '../utils/Calculator';
 
 const ManifestContext = createContext(null);
 
@@ -137,12 +138,14 @@ export const ManifestProvider = ({ children }) => {
     if (!hasCargo) {
       throw new Error('At least one cargo item with a quantity greater than zero is required.');
     }
-
+    const quote = Calculator(manifest);
     // 2. Prepare data for Firestore
     const shipmentData = {
       ...manifest,
+      client: currentUser.global_name,
       userId: currentUser.uid,
       status: 'scheduled',
+      quote: quote,
       paid: false, // Shipments are not paid by default
       driverId: null, // No driver assigned on creation
       createdAt: serverTimestamp(),
