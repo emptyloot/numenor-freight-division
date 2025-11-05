@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "numenor-freight-division"
-  }
+    "default": "numenor-freight-division",
+    "staging": "numenor-freight-staging",
+    "production": "numenor-freight-division"
+  },
+  "targets": {},
+  "etags": {}
 }

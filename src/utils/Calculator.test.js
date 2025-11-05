@@ -1,57 +1,70 @@
+import Calculator from './Calculator';
+
 /**
- * @description Unit tests for the Calculator utility function.
+ * @file This file contains the unit tests for the Calculator function.
+ * The Calculator function is used to estimate the cost of a shipment.
  */
-import Calculator from './Calculator'; // Import the function to test
-
-// Describe block groups tests for the Calculator function
-describe('Calculator Utility', () => {
-  /**
-   * @description Tests the calculator with valid, positive integer inputs.
-   */
-  test('should return the correct quote for valid inputs', () => {
-    // Arrange: Define test inputs
-    const energy = '10'; // Use strings as they come from input fields
-    const tiles = '12';
-    const expectedResult = 120; // 10 * 12 = 120
-
-    // Act: Call the function with test inputs
-    const result = Calculator(energy, tiles);
-
-    // Assert: Check if the result matches the expected value
-    expect(result).toBe(expectedResult);
+describe('Calculator Cost Estimation', () => {
+  // Test case for a short distance shipment, where no long haul fee is applied.
+  test('should correctly calculate the cost for a short haul shipment', () => {
+    const manifest = {
+      port: [
+        { north: 1000, east: 1000 }, // Start location
+        { north: 2000, east: 2000 }, // End location
+      ],
+    };
+    const cost = Calculator(manifest);
+    // The expected cost is calculated based on the formula in Calculator.js for short distances.
+    expect(cost).toBeCloseTo(15126);
   });
 
-  /**
-   * @description Tests the calculator when one or both inputs are zero.
-   */
-  test('should return 0 if energy or tiles are zero', () => {
-    expect(Calculator('0', '12')).toBe(0); // Zero energy
-    expect(Calculator('10', '0')).toBe(0); // Zero tiles
-    expect(Calculator('0', '0')).toBe(0); // Both zero
+  // Test case for a long distance shipment, where a long haul fee is applied.
+  test('should correctly calculate the cost for a long haul shipment', () => {
+    const manifest = {
+      port: [
+        { north: 1000, east: 1000 }, // Start location
+        { north: 4000, east: 4000 }, // End location
+      ],
+    };
+    const cost = Calculator(manifest);
+    // The expected cost includes the long haul fee.
+    expect(cost).toBeCloseTo(28440);
   });
 
-  /**
-   * @description Tests the calculator when inputs are missing or invalid strings.
-   * The Number() conversion handles these by returning 0.
-   */
-  test('should return 0 for invalid or missing inputs', () => {
-    expect(Calculator('', '12')).toBe(0); // Missing energy
-    expect(Calculator('10', '')).toBe(0); // Missing tiles
-    expect(Calculator('', '')).toBe(0); // Both missing
-    expect(Calculator('ABC', '12')).toBe(0); // Invalid energy string
-    expect(Calculator('10', 'XYZ')).toBe(0); // Invalid tiles string
-    expect(Calculator(undefined, '12')).toBe(0); // Undefined energy
-    expect(Calculator('10', null)).toBe(0); // Null tiles
+  // Test case for a shipment with no distance between start and end locations.
+  test('should correctly calculate the cost for a zero distance shipment', () => {
+    const manifest = {
+      port: [
+        { north: 1000, east: 1000 }, // Start location
+        { north: 1000, east: 1000 }, // End location is the same as start
+      ],
+    };
+    const cost = Calculator(manifest);
+    // The expected cost should not include any distance-based charges.
+    expect(cost).toBe(9469);
   });
 
-  /**
-   * @description Tests with larger numbers to ensure calculation scales correctly.
-   */
-  test('should handle larger numbers correctly', () => {
-    const energy = '50';
-    const tiles = '100';
-    const expectedResult = 5000; // 50 * 100 = 5000
-    const result = Calculator(energy, tiles);
-    expect(result).toBe(expectedResult);
+  //Test Examples from Doc
+  test('should return same values as original example 1', () => {
+    const manifest = {
+      port: [
+        { north: 4212, east: 6989 }, // Start location
+        { north: 2950, east: 6101 }, // End location is the same as start
+      ],
+    };
+    const cost = Calculator(manifest);
+    // The expected cost should not include any distance-based charges.
+    expect(cost).toBe(9181);
+  });
+  test('should return same values as original example 2', () => {
+    const manifest = {
+      port: [
+        { north: 1330, east: 2420 }, // Start location
+        { north: 4005, east: 6577 }, // End location is the same as start
+      ],
+    };
+    const cost = Calculator(manifest);
+    // The expected cost should not include any distance-based charges.
+    expect(cost).toBe(29712);
   });
 });

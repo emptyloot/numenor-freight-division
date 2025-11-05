@@ -10,7 +10,7 @@ const UserProfile = () => {
 
   // Placeholder user data
   const placeholderUser = {
-    username: 'Guest',
+    global_name: 'Guest',
     avatar: 'https://cdn.discordapp.com/embed/avatars/0.png',
   };
 
@@ -24,8 +24,8 @@ const UserProfile = () => {
 
   return (
     <div className="flex items-center">
-      <img src={avatarUrl} alt={`${displayUser.username}'s avatar`} className="w-10 h-10 rounded-full mr-4" />
-      <span className="text-white font-bold">{displayUser.username}</span>
+      <img src={avatarUrl} alt={`${displayUser.global_name}'s avatar`} className="w-10 h-10 rounded-full mr-4" />
+      <span className="text-white font-bold">{displayUser.global_name}</span>
     </div>
   );
 };

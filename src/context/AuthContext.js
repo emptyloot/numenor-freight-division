@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, firestore } from '../firebase/firebase';
 
 const AuthContext = createContext();
@@ -34,32 +34,47 @@ export const AuthProvider = ({ children }) => {
     signOut(auth);
   };
 
+  /**
+   * @description Subscribes to Firebase authentication state changes. When a user logs in,
+   * it fetches their profile from Firestore and merges it with the auth data. When they
+   * log out, it clears the user state. It also manages the initial loading state.
+   * The subscription is automatically cleaned up on component unmount.
+   */
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // User is signed in, now fetch their profile from Firestore.
-        const userRef = doc(firestore, 'users', user.uid); // eslint-disable-line
-        const docSnap = await getDoc(userRef);
+    /**
+     *
+     */
+    let unsubscribeProfile = () => {}; // No-op function
 
-        if (docSnap.exists()) {
-          setCurrentUser({ ...user, ...docSnap.data() });
-        } else {
-          // Handle case where user exists in Auth but not in Firestore
-          console.error("User document doesn't exist in Firestore.");
-          setCurrentUser(user);
-        }
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      unsubscribeProfile(); // Unsubscribe from previous user's profile listener
+
+      if (user) {
+        const userRef = doc(firestore, 'users', user.uid);
+        unsubscribeProfile = onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            setCurrentUser({ ...user, ...docSnap.data() });
+          } else {
+            console.log("User document doesn't exist yet. Listening for creation...");
+            setCurrentUser(user); // Set user without profile data for now
+          }
+          setLoading(false);
+        });
       } else {
-        // User is signed out
         setCurrentUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribeAuth();
+      unsubscribeProfile();
+    };
   }, []);
 
   const value = {
     currentUser,
+    isAuthenticated: !!currentUser,
     logout,
   };
 

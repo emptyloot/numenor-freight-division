@@ -1,10 +1,56 @@
+// These rules define who can read, write, and modify data in your Firestore database.
+// They are the core of your backend security.
 rules_version = '2';
+
 service cloud.firestore {
-  match /databases/{database}/documents {
-    // Users can read their own user document
-    match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow write: if false; // Nobody can write to user documents from the client
-    }
-  }
+match /databases/{database}/documents {
+
+// --- USERS Collection ---
+// Users can only read their own user document.
+// Users can only create their own document upon first login.
+// No one can update another user's document.
+match /users/{userId} {
+  allow read, create: if request.auth != null && request.auth.uid == userId;
+  allow update: if false; // Disallow updates for now
+}
+
+// --- SHIPMENTS Collection ---
+match /shipments/{shipmentId} {
+  // CREATE: An authenticated user can create a shipment for themselves.
+  // The shipment must have default values for status, paid, and driverId,
+  // and the correct data types for the other fields.
+  allow create: if request.auth != null && 
+              request.resource.data.userId == request.auth.uid &&
+              request.resource.data.status == 'scheduled' &&
+              request.resource.data.paid == false &&
+              request.resource.data.driverId == null &&
+              request.resource.data.port is list &&
+              request.resource.data.cargo is list &&
+              request.resource.data.createdAt == request.time;
+
+  // READ: A user can read a shipment if they are the client, the assigned driver, or a staff member.
+  // Drivers can also see any shipment that is unassigned (driverId is null).
+  allow read: if request.auth != null && 
+              (request.auth.uid == resource.data.userId || 
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff' ||
+               (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'driver' && (resource.data.driverId == request.auth.uid || resource.data.driverId == null)));
+               
+  // UPDATE:
+  // - A staff member can update 'status' and 'paid' fields.
+  // - An assigned driver can only update the 'status'.
+  // - Any authorized user can assign/unassign a driver.
+  allow update: if request.auth != null && 
+                // Staff can update status and paid status
+                (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'staff' && request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'paid', 'driverId', 'driverName'])) ||
+                // Assigned driver can update status
+                (request.auth.uid == resource.data.driverId && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])) ||
+                // Any driver can claim an unassigned shipment
+                (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'driver' && resource.data.driverId == null && request.resource.data.driverId == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['driverId', 'driverName']));
+
+  // DELETE: No one can delete a shipment for data integrity.
+  allow delete: if false;
+}
+
+
+}
 }

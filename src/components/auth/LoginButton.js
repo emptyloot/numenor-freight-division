@@ -18,15 +18,7 @@ const LoginButton = ({ children }) => {
      */
     const fetchConfig = async () => {
       try {
-        let functionUrl;
-        if (window.location.hostname === 'localhost') {
-          // Local development, requires full URL
-          functionUrl = 'http://localhost:5001/numenor-freight-division/us-central1/api/auth/config';
-        } else {
-          // Production, uses rewrite rule in firebase.json
-          functionUrl = '/api/auth/config';
-        }
-        const response = await axios.get(functionUrl);
+        const response = await axios.get(`/api/auth/config`);
         setClientId(response.data.clientId);
       } catch (error) {
         console.error('Error fetching Discord client ID:', error);

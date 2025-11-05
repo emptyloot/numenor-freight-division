@@ -5,8 +5,10 @@ import Background from './components/background/Background.js';
 import Header from './components/header/Header.js';
 import About from './components/aboutus/About.js';
 import CreateShipment from './components/scheduleshipmentspage/CreateShipment.js';
-
+import ProtectedRoute from './components/auth/ProtectedRoute.js';
 import AuthCallback from './components/auth/AuthCallback.js';
+import Dashboard from './components/dashboard/Dashboard.js';
+import ShipmentDetails from './components/dashboard/ShipmentDetails.js';
 
 /**
 @description The main application component that assembles the page layout and defines the routes.
@@ -20,7 +22,30 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/about" element={<About />} />
-        <Route path="/schedule" element={<CreateShipment />} />
+        <Route
+          path="/schedule"
+          element={
+            <ProtectedRoute>
+              <CreateShipment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shipment/:shipmentId"
+          element={
+            <ProtectedRoute>
+              <ShipmentDetails />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
       <footer>
