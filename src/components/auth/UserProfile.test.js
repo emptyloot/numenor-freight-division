@@ -18,7 +18,7 @@ describe('UserProfile', () => {
 
   test('renders with provided user data', () => {
     const testUser = {
-      username: 'TestUser',
+      global_name: 'TestUser',
       avatar: 'test-avatar',
       discordId: '12345',
     };
