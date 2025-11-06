@@ -87,6 +87,7 @@ const handleDiscordAuth = async (req, res) => {
     if (!userDoc.exists) {
       // Document does not exist, create it with a default role
       await userRef.set({
+        global_name: discordUser.global_name,
         discordId: discordUser.id,
         username: discordUser.username,
         avatar: discordUser.avatar,
@@ -95,6 +96,7 @@ const handleDiscordAuth = async (req, res) => {
     } else {
       // Document exists, update it without touching the role
       await userRef.update({
+        global_name: discordUser.global_name,
         username: discordUser.username,
         avatar: discordUser.avatar,
       });

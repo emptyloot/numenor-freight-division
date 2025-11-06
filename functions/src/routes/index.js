@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 
 const authController = require('./authController');
+const claimsController = require('./claimsController');
 // Initialize Firebase Admin SDK
 if (process.env.FUNCTIONS_EMULATOR) {
   admin.initializeApp({
@@ -54,6 +55,9 @@ app.get('/api', (req, res) => {
 // Authentication routes
 app.get('/api/auth/config', authController.getAuthConfig);
 app.post('/api/auth/discord', authController.handleDiscordAuth);
+
+// Claims routes
+app.get('/api/claims', claimsController.getClaims);
 
 // Export the Express app as a cloud function
 exports.api = functions.https.onRequest(app);
