@@ -2,8 +2,9 @@ import React from 'react';
 import { AuthProvider } from './AuthContext';
 import { DashboardProvider } from './DashboardContext';
 import { ManifestProvider } from './ShipmentManifestContext';
+import { ClaimProvider } from './ClaimContext';
 
-const contextProviders = [AuthProvider, DashboardProvider, ManifestProvider];
+const contextProviders = [AuthProvider, DashboardProvider, ManifestProvider, ClaimProvider];
 
 /**
  * @description A component that composes multiple context providers into a single provider.
