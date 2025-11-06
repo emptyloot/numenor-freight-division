@@ -26,7 +26,9 @@ match /shipments/{shipmentId} {
               request.resource.data.driverId == null &&
               request.resource.data.port is list &&
               request.resource.data.cargo is list &&
-              request.resource.data.createdAt == request.time;
+              request.resource.data.createdAt == request.time &&
+              request.resource.data.client is string &&
+              request.resource.data.quote is number;
 
   // READ: A user can read a shipment if they are the client, the assigned driver, or a staff member.
   // Drivers can also see any shipment that is unassigned (driverId is null).

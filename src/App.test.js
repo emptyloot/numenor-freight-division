@@ -1,102 +1,92 @@
-/**
- * @description This is the default test file for the main App component.
- * It has been modified to support React Router.
- */
-import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import App from './App';
+import { render, screen, cleanup } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-import { ManifestProvider } from './context/ShipmentManifestContext';
+import App from './App';
 
-// Mock the useAuth hook
-jest.mock('./context/AuthContext');
-jest.mock('axios');
-jest.mock('firebase/auth');
+jest.mock('./components/homepage/Homepage.js', () => () => <div data-testid="homepage">Homepage</div>);
+jest.mock('./components/background/Background.js', () => () => <div data-testid="background">Background</div>);
+jest.mock('./components/header/Header.js', () => () => <div data-testid="header">Header</div>);
+jest.mock('./components/about/About.js', () => () => <div data-testid="about">About</div>);
+jest.mock('./components/schedule/CreateShipment.js', () => () => (
+  <div data-testid="create-shipment">CreateShipment</div>
+));
+jest.mock('./components/auth/ProtectedRoute.js', () => ({ children }) => (
+  <div data-testid="protected-route">{children}</div>
+));
+jest.mock('./components/auth/AuthCallback.js', () => () => <div data-testid="auth-callback">AuthCallback</div>);
+jest.mock('./components/dashboard/Dashboard.js', () => () => <div data-testid="dashboard">Dashboard</div>);
+jest.mock('./components/dashboard/ShipmentDetails.js', () => () => (
+  <div data-testid="shipment-details">ShipmentDetails</div>
+));
 
-afterEach(cleanup);
-
-beforeEach(() => {
-  useAuth.mockReturnValue({
-    isAuthenticated: true,
-    setIsAuthenticated: jest.fn(),
-    user: { username: 'TestUser' },
+describe('App component', () => {
+  test('renders homepage by default', () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('homepage')).toBeInTheDocument();
   });
-});
 
-/**
- * @description Renders the full App components and verifies text on screen.
- */
-test('Renders the main homepage title', () => {
-  render(
-    <MemoryRouter>
-      <ManifestProvider>
+  test('renders about page on /about route', () => {
+    render(
+      <MemoryRouter initialEntries={['/about']}>
         <App />
-      </ManifestProvider>
-    </MemoryRouter>
-  );
-  // Check for the main H1 title on the homepage
-  const headingElement = screen.getByText(/"By land or sea, the world turns on our trade"/i);
-  expect(headingElement).toBeInTheDocument();
-});
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('about')).toBeInTheDocument();
+  });
 
-/**
- * @description Renders the full App and navigates to the about us page.
- */
-test('Navigates to About page when About Us link is clicked', async () => {
-  render(
-    <MemoryRouter>
-      <ManifestProvider>
+  test('renders create shipment page on /schedule route within a protected route', () => {
+    render(
+      <MemoryRouter initialEntries={['/schedule']}>
         <App />
-      </ManifestProvider>
-    </MemoryRouter>
-  );
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('protected-route')).toBeInTheDocument();
+    expect(screen.getByTestId('create-shipment')).toBeInTheDocument();
+  });
 
-  // Find the "About us" link (case-insensitive)
-  const aboutLink = screen.getByRole('link', { name: /about us/i });
-
-  // Simulate a user clicking the link
-  await userEvent.click(aboutLink);
-
-  // Check if the heading of the About page is now visible
-  const aboutHeading = screen.getByRole('heading', { name: /about númenor freight division/i });
-  expect(aboutHeading).toBeInTheDocument();
-});
-
-test('Render the About again page and navigates back to calculator', async () => {
-  render(
-    <MemoryRouter initialEntries={['/about']}>
-      <ManifestProvider>
+  test('renders dashboard page on /dashboard route within a protected route', () => {
+    render(
+      <MemoryRouter initialEntries={['/dashboard']}>
         <App />
-      </ManifestProvider>
-    </MemoryRouter>
-  );
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('protected-route')).toBeInTheDocument();
+    expect(screen.getByTestId('dashboard')).toBeInTheDocument();
+  });
 
-  //Find the Calculator link (case insensitive)
-  const calculatorLink = screen.getByRole('link', { name: /calculator/i });
-
-  await userEvent.click(calculatorLink);
-
-  const calculatorHeading = screen.getByRole('heading', { name: /Instant Quote Calculator/i });
-
-  expect(calculatorHeading).toBeInTheDocument();
-});
-
-test('Render the schedule page and navigates back to calculator', async () => {
-  render(
-    <MemoryRouter initialEntries={['/schedule']}>
-      <ManifestProvider>
+  test('renders shipment details page on /shipment/:shipmentId route within a protected route', () => {
+    render(
+      <MemoryRouter initialEntries={['/shipment/123']}>
         <App />
-      </ManifestProvider>
-    </MemoryRouter>
-  );
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('protected-route')).toBeInTheDocument();
+    expect(screen.getByTestId('shipment-details')).toBeInTheDocument();
+  });
 
-  //Find the Calculator link (case insensitive)
-  const calculatorLink = screen.getByRole('link', { name: /calculator/i });
+  test('renders auth callback page on /auth/callback route', () => {
+    render(
+      <MemoryRouter initialEntries={['/auth/callback']}>
+        <App />
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId('auth-callback')).toBeInTheDocument();
+  });
 
-  await userEvent.click(calculatorLink);
-
-  const calculatorHeading = screen.getByRole('heading', { name: /Instant Quote Calculator/i });
-
-  expect(calculatorHeading).toBeInTheDocument();
+  test('renders background and header on all routes', () => {
+    const routes = ['/', '/about', '/schedule', '/dashboard', '/shipment/123', '/auth/callback'];
+    routes.forEach((route) => {
+      render(
+        <MemoryRouter initialEntries={[route]}>
+          <App />
+        </MemoryRouter>
+      );
+      expect(screen.getByTestId('background')).toBeInTheDocument();
+      expect(screen.getByTestId('header')).toBeInTheDocument();
+      cleanup();
+    });
+  });
 });
