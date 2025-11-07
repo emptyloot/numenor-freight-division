@@ -103,7 +103,7 @@ const LocationInput = ({ baseId, label, portIndex }) => {
               {searchResults.map((result) => (
                 <li
                   key={result.name}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-900"
                   onClick={() => handleSelectSearchResult(result)}
                 >
                   {result.name}
