@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useManifest } from '../../context/ShipmentManifestContext';
 
 /**
  * @param {object} props The component props.
@@ -11,6 +12,7 @@ import axios from 'axios';
 const LoginButton = ({ children }) => {
   const [clientId, setClientId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { manifest } = useManifest();
 
   useEffect(() => {
     /**
@@ -45,6 +47,9 @@ const LoginButton = ({ children }) => {
     }
 
     const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+
+    //Save the manifest data
+    sessionStorage.setItem('pendingManifest', JSON.stringify(manifest));
 
     window.location.href = authUrl;
   };

@@ -7,8 +7,8 @@ import LocationInput from './InputLocation';
 const mockUpdatePortField = jest.fn();
 const mockManifest = {
   port: [
-    { name: 'Initial Origin', north: 100, east: 200 },
-    { name: 'Initial Destination', north: 300, east: 400 },
+    { name: '', north: 100, east: 200 },
+    { name: '', north: 300, east: 400 },
   ],
 };
 jest.mock('../../context/ShipmentManifestContext', () => ({

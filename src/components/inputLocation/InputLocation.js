@@ -41,6 +41,13 @@ const LocationInput = ({ baseId, label, portIndex }) => {
   };
 
   useEffect(() => {
+    if (currentPort.name) {
+      setSearch(currentPort.name);
+      setIsMatched(true);
+    }
+  }, [currentPort.name]);
+
+  useEffect(() => {
     if (search === '') {
       setIsMatched(false);
       setSearchResults([]);
