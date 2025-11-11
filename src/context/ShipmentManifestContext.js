@@ -45,6 +45,20 @@ export const ManifestProvider = ({ children }) => {
   };
 
   /**
+   * @description Updates an entire port object at a specific index in the manifest state.
+   * This is useful when an external action (e.g., selecting from search results)
+   * provides a complete port object that needs to replace the existing one.
+   * @param {number} portIndex - The index of the port object to update (0 for origin, 1 for destination).
+   * @param {object} port - The new port object to set.
+   */
+  const updatePort = (portIndex, port) => {
+    setManifest((prevManifest) => {
+      const newManifest = { ...prevManifest };
+      newManifest.port[portIndex] = port;
+      return newManifest;
+    });
+  };
+  /**
    * Specialized function to immutably update a single field (name, east, or north)
    * within a specific port object (index 0 or 1) in the manifest state.
    * @param {number} portIndex - The index of the port object to update (0 for origin, 1 for destination).
@@ -161,6 +175,7 @@ export const ManifestProvider = ({ children }) => {
   const manifestState = {
     manifest,
     setManifest,
+    updatePort,
     updatePortField,
     updateCargoField,
     resetManifest,

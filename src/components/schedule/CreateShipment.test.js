@@ -44,6 +44,7 @@ jest.mock('../../context/ShipmentManifestContext', () => ({
 // Mock the useAuth hook
 jest.mock('../../context/AuthContext');
 jest.mock('../../context/ClaimContext');
+jest.mock('../inputLocation/InputLocation', () => () => <div data-testid="input-location-mock" />);
 
 /**
  * @description Test suite for the CreateShipment component.
