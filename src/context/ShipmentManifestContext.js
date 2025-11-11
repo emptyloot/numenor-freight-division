@@ -33,7 +33,18 @@ const DEFAULT_PORT = {
 export const ManifestProvider = ({ children }) => {
   const INITIAL_MANIFEST_STATE = {
     port: [DEFAULT_PORT, DEFAULT_PORT],
-    cargo: [DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM],
+    cargo: [
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+    ],
   };
 
   const { currentUser } = useAuth();
@@ -42,6 +53,27 @@ export const ManifestProvider = ({ children }) => {
   /** @description Resets the manifest state to its initial default values. */
   const resetManifest = () => {
     setManifest(INITIAL_MANIFEST_STATE);
+  };
+
+  /**
+   * @description Adds a new cargo item to the manifest.
+   */
+  const addCargoItem = () => {
+    setManifest((prevManifest) => ({
+      ...prevManifest,
+      cargo: [...prevManifest.cargo, { ...DEFAULT_CARGO_ITEM }],
+    }));
+  };
+
+  /**
+   * @description Removes a cargo item from the manifest at a specific index.
+   * @param {number} cargoIndex - The index of the cargo item to remove.
+   */
+  const removeCargoItem = (cargoIndex) => {
+    setManifest((prevManifest) => ({
+      ...prevManifest,
+      cargo: prevManifest.cargo.filter((_, idx) => idx !== cargoIndex), //eslint-disable-line
+    }));
   };
 
   /**
@@ -180,6 +212,8 @@ export const ManifestProvider = ({ children }) => {
     updateCargoField,
     resetManifest,
     handleScheduleShipment,
+    addCargoItem,
+    removeCargoItem,
   };
 
   return <ManifestContext.Provider value={manifestState}>{children}</ManifestContext.Provider>;
