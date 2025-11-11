@@ -56,6 +56,7 @@ const LoginButton = ({ children }) => {
 
   return (
     <button
+      type="button"
       onClick={handleLogin}
       disabled={loading || !clientId}
       className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-2 px-4 rounded-md flex items-center justify-center w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
