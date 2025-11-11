@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useManifest } from '../../context/ShipmentManifestContext';
 import { useClaims } from '../../context/ClaimContext';
+import normalizeString from '../../utils/Helper';
 
 /**
  * @description A reusable component that renders a form label and its associated text input field, following standard accessibility practices by linking the label's `htmlFor` attribute to the input's `id`.
@@ -40,19 +41,6 @@ const LocationInput = ({ baseId, label, portIndex }) => {
   const handleSearchChange = (e) => {
     const searchTerm = e.target.value;
     setSearch(searchTerm);
-  };
-
-  /**
-   * @description Normalizes a string for case-insensitive and accent-insensitive comparison.
-   * @param {string} text The string to normalize.
-   * @returns {string} The normalized string.
-   */
-  const normalizeString = (text) => {
-    if (typeof text !== 'string') return '';
-    return text
-      .toLowerCase()
-      .normalize('NFD') // Decomposes accented chars (e.g., "ó" -> "o" + "́")
-      .replace(/[\u0300-\u036f]/g, ''); // Removes the accent characters
   };
 
   /**
