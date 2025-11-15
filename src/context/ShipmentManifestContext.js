@@ -33,7 +33,18 @@ const DEFAULT_PORT = {
 export const ManifestProvider = ({ children }) => {
   const INITIAL_MANIFEST_STATE = {
     port: [DEFAULT_PORT, DEFAULT_PORT],
-    cargo: [DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM, DEFAULT_CARGO_ITEM],
+    cargo: [
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+      DEFAULT_CARGO_ITEM,
+    ],
   };
 
   const { currentUser } = useAuth();
@@ -44,6 +55,41 @@ export const ManifestProvider = ({ children }) => {
     setManifest(INITIAL_MANIFEST_STATE);
   };
 
+  /**
+   * @description Adds a new cargo item to the manifest.
+   */
+  const addCargoItem = () => {
+    setManifest((prevManifest) => ({
+      ...prevManifest,
+      cargo: [...prevManifest.cargo, { ...DEFAULT_CARGO_ITEM }],
+    }));
+  };
+
+  /**
+   * @description Removes a cargo item from the manifest at a specific index.
+   * @param {number} cargoIndex - The index of the cargo item to remove.
+   */
+  const removeCargoItem = (cargoIndex) => {
+    setManifest((prevManifest) => ({
+      ...prevManifest,
+      cargo: prevManifest.cargo.filter((_, idx) => idx !== cargoIndex), //eslint-disable-line
+    }));
+  };
+
+  /**
+   * @description Updates an entire port object at a specific index in the manifest state.
+   * This is useful when an external action (e.g., selecting from search results)
+   * provides a complete port object that needs to replace the existing one.
+   * @param {number} portIndex - The index of the port object to update (0 for origin, 1 for destination).
+   * @param {object} port - The new port object to set.
+   */
+  const updatePort = (portIndex, port) => {
+    setManifest((prevManifest) => {
+      const newManifest = { ...prevManifest };
+      newManifest.port[portIndex] = port;
+      return newManifest;
+    });
+  };
   /**
    * Specialized function to immutably update a single field (name, east, or north)
    * within a specific port object (index 0 or 1) in the manifest state.
@@ -161,10 +207,13 @@ export const ManifestProvider = ({ children }) => {
   const manifestState = {
     manifest,
     setManifest,
+    updatePort,
     updatePortField,
     updateCargoField,
     resetManifest,
     handleScheduleShipment,
+    addCargoItem,
+    removeCargoItem,
   };
 
   return <ManifestContext.Provider value={manifestState}>{children}</ManifestContext.Provider>;

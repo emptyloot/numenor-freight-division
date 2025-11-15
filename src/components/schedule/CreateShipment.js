@@ -64,10 +64,16 @@ function CreateShipment() {
             </fieldset>
             <fieldset className="space-y-4">
               <legend>Cargo Manifest</legend>
-              <InputCargo baseId="cargo1" cargoIndex={0} />
-              <InputCargo baseId="cargo2" cargoIndex={1} />
-              <InputCargo baseId="cargo3" cargoIndex={2} />
-              <InputCargo baseId="cargo4" cargoIndex={3} />
+              <InputCargo baseId="cargo1" maxQuantity="25" cargoIndex={0} />
+              <InputCargo baseId="cargo2" maxQuantity="25" cargoIndex={1} />
+              <InputCargo baseId="cargo3" maxQuantity="25" cargoIndex={2} />
+              <InputCargo baseId="cargo4" maxQuantity="25" cargoIndex={3} />
+              <InputCargo baseId="cargo5" maxQuantity="25" cargoIndex={4} />
+              <InputCargo baseId="cargo6" maxQuantity="25" cargoIndex={5} />
+              <InputCargo baseId="cargo7" maxQuantity="25" cargoIndex={6} />
+              <InputCargo baseId="cargo8" maxQuantity="25" cargoIndex={7} />
+              <InputCargo baseId="cargo9" maxQuantity="25" cargoIndex={8} />
+              <InputCargo baseId="cargo10" maxQuantity="25" cargoIndex={9} />
             </fieldset>
 
             {error && <div className="text-red-400 bg-red-900/50 p-3 rounded-lg">{error}</div>}
