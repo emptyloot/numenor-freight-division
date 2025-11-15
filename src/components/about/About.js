@@ -8,8 +8,19 @@ function About() {
       <div className="max-w-2xl mx-auto mt-12">
         <h1 className="text-4xl font-bold">About Númenor Freight Division</h1>
         <p className="mt-8 text-lg">
-          Founded on the principles of reliability and efficiency, the Númenor Freight Division is dedicated to serving
-          the logistical needs of BitCraft's greatest builders, artisans, and pioneers.
+          Need Help or Have a Special Request? <br /> If you run into any issues with your delivery, or would like to
+          arrange a custom shipment, feel free to reach out directly on Discord.
+          <br />
+          Contact: Rami (Discord: @Rami)
+          <br /> Join our community:{' '}
+          <a
+            href="https://discord.gg/vxfnPqrPp9"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline"
+          >
+            Join the Numenor Freight Discord
+          </a>
         </p>
       </div>
     </main>
