@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-
+import normalizeString from '../utils/Helper';
 const ClaimContext = createContext(null);
 
 /**
@@ -58,7 +58,7 @@ export const ClaimProvider = ({ children }) => {
       if (!name || claims.length === 0) {
         return [];
       }
-      return claims.filter((claim) => claim.name.toLowerCase().includes(name.toLowerCase()));
+      return claims.filter((claim) => normalizeString(claim.name).includes(normalizeString(name.toLowerCase())));
     },
     [claims]
   );
