@@ -5,9 +5,10 @@ import { useManifest } from '../../context/ShipmentManifestContext';
  * It uses the cargoIndex prop to identify which item in the manifest it corresponds to.
  * @param {object} props The component's properties.
  * @param {number} props.cargoIndex The index of the cargo item in the manifest's cargo array (0-3).
+ * @param {object} props.maxQuantity {string} props.maxQuantity The maximum allowed quantity for this cargo item. Defaults to '100'.
  * @returns {object} (JSX.Element) A React component for a single cargo item's inputs.
  */
-const InputCargo = ({ cargoIndex }) => {
+const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
   const cargoSlot = cargoIndex + 1;
   const { manifest, updateCargoField } = useManifest();
   const currentCargo = manifest.cargo[cargoIndex];
@@ -42,7 +43,7 @@ const InputCargo = ({ cargoIndex }) => {
         id={`cargo${cargoSlot}Quantity`}
         type="number"
         min="0"
-        max="100"
+        max={maxQuantity}
         className="w-half p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
         value={currentCargo.quantity}
         onChange={(e) => handleChange('quantity', e.target.value)}

@@ -36,6 +36,12 @@ jest.mock('../../context/ShipmentManifestContext', () => ({
         { name: 'Test Cargo 2', quantity: '20' },
         { name: 'Test Cargo 3', quantity: '30' },
         { name: 'Test Cargo 4', quantity: '40' },
+        { name: 'Test Cargo 5', quantity: '40' },
+        { name: 'Test Cargo 6', quantity: '40' },
+        { name: 'Test Cargo 7', quantity: '40' },
+        { name: 'Test Cargo 8', quantity: '40' },
+        { name: 'Test Cargo 9', quantity: '40' },
+        { name: 'Test Cargo 10', quantity: '40' },
       ],
     },
   }),
@@ -44,6 +50,7 @@ jest.mock('../../context/ShipmentManifestContext', () => ({
 // Mock the useAuth hook
 jest.mock('../../context/AuthContext');
 jest.mock('../../context/ClaimContext');
+jest.mock('../inputLocation/InputLocation', () => () => <div data-testid="input-location-mock" />);
 
 /**
  * @description Test suite for the CreateShipment component.

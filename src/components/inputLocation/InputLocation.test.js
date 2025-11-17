@@ -4,11 +4,12 @@ import userEvent from '@testing-library/user-event';
 import LocationInput from './InputLocation';
 
 // Mock the useManifest hook
+const mockUpdatePort = jest.fn();
 const mockUpdatePortField = jest.fn();
 const mockManifest = {
   port: [
-    { name: 'Initial Origin', north: 100, east: 200 },
-    { name: 'Initial Destination', north: 300, east: 400 },
+    { name: '', north: 100, east: 200 },
+    { name: '', north: 300, east: 400 },
   ],
 };
 jest.mock('../../context/ShipmentManifestContext', () => ({
@@ -19,6 +20,7 @@ jest.mock('../../context/ShipmentManifestContext', () => ({
   useManifest: () => ({
     manifest: mockManifest,
     updatePortField: mockUpdatePortField,
+    updatePort: mockUpdatePort,
   }),
 }));
 
@@ -88,8 +90,8 @@ describe('LocationInput Component', () => {
 
   test('calls findClaimByName and displays search results when typing in search input', async () => {
     const mockClaims = [
-      { name: 'Armenelos', locationX: 300, locationZ: 600 },
-      { name: 'Bits', locationX: 100, locationZ: 200 },
+      { name: 'Armenelos', entityId: '1', locationX: 300, locationZ: 600 },
+      { name: 'Bits', entityId: '2', locationX: 100, locationZ: 200 },
     ];
     mockFindClaimByName.mockReturnValue(mockClaims);
 
@@ -100,12 +102,12 @@ describe('LocationInput Component', () => {
 
     expect(mockFindClaimByName).toHaveBeenCalledWith('Bits');
     // Assert that both search results are displayed
-    expect(await screen.findByText('Armenelos')).toBeInTheDocument();
-    expect(await screen.findByText('Bits')).toBeInTheDocument();
+    expect(await screen.findByText(/Armenelos:/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Bits:/i)).toBeInTheDocument();
   });
 
   test('selects a search result and updates port fields', async () => {
-    const mockClaim = { name: 'Armenelos', locationX: 300, locationZ: 600 };
+    const mockClaim = { name: 'Armenelos', entityId: 'xyz-123', locationX: 300, locationZ: 600 }; //eslint-disable-line
     const mockLocation = { name: 'Armenelos', north: 200, east: 100 }; // Scaled values
     mockFindClaimByName.mockReturnValue([mockClaim]);
     mockGetClaimLocation.mockReturnValue(mockLocation);
@@ -113,24 +115,22 @@ describe('LocationInput Component', () => {
     render(<LocationInput baseId="origin" label="Port of Origin" portIndex={0} />);
     const searchInput = screen.getByLabelText(/Search by Settlement Name/i);
 
-    await userEvent.type(searchInput, 'Armenelos');
-    await screen.findByText('Armenelos');
+    await userEvent.type(searchInput, 'Armen'); //eslint-disable-line
+    await screen.findByText(/Armenelos:/i);
 
-    fireEvent.click(screen.getByText('Armenelos'));
+    fireEvent.mouseDown(screen.getByText(/Armenelos:/i));
 
     expect(mockGetClaimLocation).toHaveBeenCalledWith(mockClaim);
-    expect(mockUpdatePortField).toHaveBeenCalledWith(0, 'name', mockLocation.name);
-    expect(mockUpdatePortField).toHaveBeenCalledWith(0, 'north', mockLocation.north);
-    expect(mockUpdatePortField).toHaveBeenCalledWith(0, 'east', mockLocation.east);
+    expect(mockUpdatePort).toHaveBeenCalledWith(0, mockLocation);
 
     // Verify search input is updated and results are cleared
     expect(searchInput).toHaveValue('Armenelos');
-    expect(screen.queryByText('Armenelos')).not.toBeInTheDocument(); // Search results list should be gone
+    expect(screen.queryByText(/Armenelos:/i)).not.toBeInTheDocument(); // Search results list should be gone
     expect(screen.getByText('✓')).toBeInTheDocument(); // Matched indicator
   });
 
   test('clears search results and matched indicator when search input is emptied', async () => {
-    const mockClaim = { name: 'Armenelos', locationX: 300, locationZ: 600 };
+    const mockClaim = { name: 'Armenelos', entityId: 'abc-456', locationX: 300, locationZ: 600 }; //eslint-disable-line
     const mockLocation = { name: 'Armenelos', north: 200, east: 100 };
     mockFindClaimByName.mockReturnValue([mockClaim]);
     mockGetClaimLocation.mockReturnValue(mockLocation);
@@ -139,9 +139,9 @@ describe('LocationInput Component', () => {
     const searchInput = screen.getByLabelText(/Search by Settlement Name/i);
 
     // Simulate typing and selecting a result
-    await userEvent.type(searchInput, 'Armenelos');
-    await screen.findByText('Armenelos');
-    fireEvent.click(screen.getByText('Armenelos'));
+    await userEvent.type(searchInput, 'Armen');//eslint-disable-line
+    await screen.findByText(/Armenelos:/i);
+    fireEvent.mouseDown(screen.getByText(/Armenelos:/i));
     await screen.findByText('✓');
 
     // Simulate clearing the input

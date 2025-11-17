@@ -13,13 +13,38 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
 
+jest.mock('firebase/auth', () => ({
+  ...jest.requireActual('firebase/auth'),
+  getAuth: jest.fn(),
+  connectAuthEmulator: jest.fn(),
+  signInWithCustomToken: jest.fn(),
+}));
+
+jest.mock('firebase/firestore', () => ({
+  ...jest.requireActual('firebase/firestore'),
+  getFirestore: jest.fn(),
+  connectFirestoreEmulator: jest.fn(),
+}));
+
 jest.mock('axios');
+
+const mockSetManifest = jest.fn();
+jest.mock('../../context/ShipmentManifestContext', () => ({
+  /**
+   * @description Mocks the useManifest hook to provide a controlled context for testing.
+   * @returns { object } An object containing the mocked `setManifest` function.
+   */
+  useManifest: () => ({
+    setManifest: mockSetManifest,
+  }),
+}));
 
 describe('AuthCallback', () => {
   const mockNavigate = jest.fn();
   const mockUseLocation = useLocation;
   const mockSignInWithCustomToken = signInWithCustomToken;
   const mockAxiosPost = axios.post;
+  const mockManifestData = { port: [{ north: 1, east: 1 }] };
 
   beforeEach(() => {
     // Reset mocks before each test
@@ -27,6 +52,14 @@ describe('AuthCallback', () => {
     useNavigate.mockReturnValue(mockNavigate);
     // Mock console.error to avoid polluting test output
     jest.spyOn(console, 'error').mockImplementation(() => {});
+    // Mock sessionStorage
+    Object.defineProperty(window, 'sessionStorage', {
+      writable: true,
+      value: {
+        getItem: jest.fn(),
+        removeItem: jest.fn(),
+      },
+    });
   });
 
   afterEach(() => {
@@ -44,6 +77,20 @@ describe('AuthCallback', () => {
     render(<AuthCallback />);
     expect(mockAxiosPost).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('retrieves pending manifest from session storage and updates context', async () => {
+    mockUseLocation.mockReturnValue({ search: '' });
+    window.sessionStorage.getItem.mockReturnValue(JSON.stringify(mockManifestData));
+
+    render(<AuthCallback />);
+
+    await waitFor(() => {
+      expect(window.sessionStorage.getItem).toHaveBeenCalledWith('pendingManifest');
+    });
+
+    expect(mockSetManifest).toHaveBeenCalledWith(mockManifestData);
+    expect(window.sessionStorage.removeItem).toHaveBeenCalledWith('pendingManifest');
   });
 
   it('should handle successful authentication and redirect to home', async () => {
