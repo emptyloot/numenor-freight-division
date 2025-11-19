@@ -149,6 +149,21 @@ const ShipmentDetails = () => {
           <span className="font-semibold">Driver:</span> {shipment.driverName || 'Unassigned'}
         </p>
 
+        {/* Cargo Manifest Display */}
+        <div className="mt-4 border-t pt-4">
+          <h2 className="text-xl font-bold mb-2">Cargo Manifest</h2>
+          {shipment.cargo && shipment.cargo.filter((item) => item.name && item.quantity > 0).length > 0 ? (
+            <ul className="list-disc list-inside">
+              {shipment.cargo
+                .filter((item) => item.name && item.quantity > 0)
+                .map((item, index) => (
+                  <li key={index}>{`${item.name}: ${item.quantity} units`}</li>
+                ))}
+            </ul>
+          ) : (
+            <p>No cargo listed for this shipment.</p>
+          )}
+        </div>
         {/* Assign to Self Button */}
         {canUpdate && !shipment.driverId && (
           <button

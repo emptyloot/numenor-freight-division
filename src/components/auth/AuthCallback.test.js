@@ -7,6 +7,7 @@ import AuthCallback from './AuthCallback';
 import { auth } from '../../firebase/firebase';
 
 // Mock dependencies
+jest.mock('../../firebase/firebase');
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: jest.fn(),

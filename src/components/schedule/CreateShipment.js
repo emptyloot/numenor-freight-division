@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useManifest } from '../../context/ShipmentManifestContext';
 import Calculator from '../../utils/Calculator';
-import InputLocation from '../inputLocation/InputLocation';
-import InputCargo from './InputCargo';
+import InputLocation from '../inputLocation/InputLocation'; // Assuming this path is correct
+import CargoList from './CargoList';
 
 /**
 @description Renders the protected page for scheduling a new shipment.
@@ -62,19 +62,7 @@ function CreateShipment() {
               <InputLocation baseId="origin" label="Port of Origin" portIndex={0} />
               <InputLocation baseId="destination" label="Final Destination" portIndex={1} />
             </fieldset>
-            <fieldset className="space-y-4">
-              <legend>Cargo Manifest</legend>
-              <InputCargo baseId="cargo1" maxQuantity="25" cargoIndex={0} />
-              <InputCargo baseId="cargo2" maxQuantity="25" cargoIndex={1} />
-              <InputCargo baseId="cargo3" maxQuantity="25" cargoIndex={2} />
-              <InputCargo baseId="cargo4" maxQuantity="25" cargoIndex={3} />
-              <InputCargo baseId="cargo5" maxQuantity="25" cargoIndex={4} />
-              <InputCargo baseId="cargo6" maxQuantity="25" cargoIndex={5} />
-              <InputCargo baseId="cargo7" maxQuantity="25" cargoIndex={6} />
-              <InputCargo baseId="cargo8" maxQuantity="25" cargoIndex={7} />
-              <InputCargo baseId="cargo9" maxQuantity="25" cargoIndex={8} />
-              <InputCargo baseId="cargo10" maxQuantity="25" cargoIndex={9} />
-            </fieldset>
+            <CargoList maxTotalQuantity={250} maxCargoSlots={10} maxQuantityPerSlot={25} />
 
             {error && <div className="text-red-400 bg-red-900/50 p-3 rounded-lg">{error}</div>}
 

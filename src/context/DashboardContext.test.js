@@ -6,6 +6,7 @@ import { onSnapshot, query, where, doc, updateDoc } from 'firebase/firestore';
 
 // Mock dependencies
 jest.mock('./AuthContext');
+jest.mock('../firebase/firebase'); // Prevent firebase from initializing
 jest.mock('firebase/firestore', () => ({
   ...jest.requireActual('firebase/firestore'),
   collection: jest.fn(),

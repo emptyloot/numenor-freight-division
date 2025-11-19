@@ -33,18 +33,7 @@ const DEFAULT_PORT = {
 export const ManifestProvider = ({ children }) => {
   const INITIAL_MANIFEST_STATE = {
     port: [DEFAULT_PORT, DEFAULT_PORT],
-    cargo: [
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-    ],
+    cargo: [DEFAULT_CARGO_ITEM],
   };
 
   const { currentUser } = useAuth();
