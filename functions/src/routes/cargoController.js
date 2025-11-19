@@ -17,10 +17,15 @@ const getCargo = async (req, res) => {
   const db = admin.firestore();
   const cacheRef = db.collection('cargoCache').doc('allCargo');
 
+  /**
+   * @description Fetches new cargo data from the external API and updates the Firestore cache.
+   * @returns {Promise<Array<object>>} A promise that resolves with the fetched cargo array.
+   */
   const fetchAndCacheCargo = async () => {
     try {
       console.log('Fetching new cargo data from API.');
       const response = await axios.get(baseUrl);
+      // eslint-disable-next-line spellcheck/spell-checker
       const cargo = response.data.cargos; // Assuming the API returns { cargo: [...] }
 
       if (!Array.isArray(cargo)) {

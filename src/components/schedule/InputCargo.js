@@ -29,17 +29,19 @@ const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
   const handleChange = (field, value) => {
     let newValue = value;
     if (field === 'quantity') {
-      const numValue = Number(value);
+      const numberValue = Number(value);
       // Cap the quantity between 0 and the maxQuantity
-      newValue = Math.max(0, Math.min(numValue, Number(maxQuantity)));
+      newValue = Math.max(0, Math.min(numberValue, Number(maxQuantity)));
     }
 
     updateCargoField(cargoIndex, field, newValue);
   };
 
   /**
-   *
-   * @param e
+   * @description Handles changes to the search input field for cargo names.
+   * It updates the local search state, clears the manifest's cargo name if it no longer matches,
+   * and performs a search for cargo types based on the input, updating the search results.
+   * @param {object} e - The event object from the input change.
    */
   const handleSearchChange = (e) => {
     const searchTerm = e.target.value;
@@ -57,8 +59,8 @@ const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
   };
 
   /**
-   *
-   * @param cargo
+   * @description Handles the selection of a cargo item from the search results.
+   * @param {object} cargo - The selected cargo object from the search results.
    */
   const handleSelectCargo = (cargo) => {
     setSearch(cargo.name);

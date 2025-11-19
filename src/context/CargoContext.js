@@ -22,6 +22,9 @@ export const CargoProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    /**
+     * @description Fetches the list of all cargo types from the API on component mount.
+     */
     const fetchCargoTypes = async () => {
       try {
         setLoading(true);

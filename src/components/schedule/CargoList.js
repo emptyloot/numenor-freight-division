@@ -36,8 +36,7 @@ const CargoList = ({ maxTotalQuantity = 250, maxCargoSlots = 10, maxQuantityPerS
    * @description Function to calculate the maximum quantity allowed for a specific cargo slot
    * This takes into account the total quantity limit and the number of available cargo slots.
    * It ensures that adding or updating an item doesn't exceed the overall capacity.
-   * @param {number} index of slot being dynamicly calculated
-   * @param currentIndex
+   * @param {number} currentIndex of slot being dynamicly calculated
    * @returns {number} the total amount the current slot can have as a max quantity
    */
   const getDynamicMaxQuantity = (currentIndex) => {
