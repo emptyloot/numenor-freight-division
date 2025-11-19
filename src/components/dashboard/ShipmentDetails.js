@@ -135,11 +135,11 @@ const ShipmentDetails = () => {
           <span className="font-semibold">Paid:</span> {shipment.paid ? 'Yes' : 'No'}
         </p>
         <p>
-          <span className="font-semibold">Origin:</span> North:{shipment.port[0].north} East:
+          <span className="font-semibold">Origin:</span> Name:{shipment.port[0].name} North:{shipment.port[0].north} East:
           {shipment.port[0].east}
         </p>
         <p>
-          <span className="font-semibold">Destination:</span> North:{shipment.port[1].north} East:
+          <span className="font-semibold">Destination:</span> Name:{shipment.port[1].name} North:{shipment.port[1].north} East:
           {shipment.port[1].east}
         </p>
         <p>
@@ -148,7 +148,11 @@ const ShipmentDetails = () => {
         <p>
           <span className="font-semibold">Driver:</span> {shipment.driverName || 'Unassigned'}
         </p>
-
+        {currentUser.role === 'staff' || currentUser.role === 'driver' && 
+        (<p>
+          <span className="font-semibold">Client:</span> {shipment.client || 'Unassigned'}
+        </p>)
+        }
         {/* Cargo Manifest Display */}
         <div className="mt-4 border-t pt-4">
           <h2 className="text-xl font-bold mb-2">Cargo Manifest</h2>
