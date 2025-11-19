@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useManifest } from '../../context/ShipmentManifestContext';
 import { useCargo } from '../../context/CargoContext';
-import normalizeString from '../../utils/Helper';
 
 /**
  * @description Renders a set of input fields for a single cargo item, including its name and quantity.
@@ -15,11 +14,12 @@ const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
   const cargoSlot = cargoIndex + 1;
   const { manifest, updateCargoField } = useManifest();
   const currentCargo = manifest.cargo[cargoIndex];
-  const { findCargoByName } = useCargo();
+  const { findCargoByName, cargoTypes } = useCargo();
 
   const [search, setSearch] = useState(currentCargo.name || '');
   const [searchResults, setSearchResults] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
+  const isNameValid = cargoTypes.some((cargo) => cargo.name === currentCargo.name);
 
   /**
    * @description Handles changes to the input fields for a specific cargo item.
@@ -37,9 +37,17 @@ const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
     updateCargoField(cargoIndex, field, newValue);
   };
 
+  /**
+   *
+   * @param e
+   */
   const handleSearchChange = (e) => {
     const searchTerm = e.target.value;
     setSearch(searchTerm);
+    // When the user types, we should clear the manifest value if it's not matching
+    if (currentCargo.name !== '' && searchTerm !== currentCargo.name) {
+      updateCargoField(cargoIndex, 'name', '');
+    }
     if (searchTerm) {
       const results = findCargoByName(searchTerm);
       setSearchResults(results);
@@ -48,6 +56,10 @@ const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
     }
   };
 
+  /**
+   *
+   * @param cargo
+   */
   const handleSelectCargo = (cargo) => {
     setSearch(cargo.name);
     updateCargoField(cargoIndex, 'name', cargo.name);
@@ -56,11 +68,12 @@ const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
   };
 
   useEffect(() => {
-    // If the name in the manifest is cleared externally, update the search input
-    if (currentCargo.name === '' && search !== '') {
-      setSearch('');
+    // Sync local search state if manifest name changes externally
+    // or if the current search text does not match a valid name.
+    if (currentCargo.name !== search) {
+      setSearch(currentCargo.name || '');
     }
-  }, [currentCargo.name, search]);
+  }, [currentCargo.name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-wrap md:flex-nowrap gap-4 items-end">
@@ -79,6 +92,11 @@ const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
           placeholder="Type to search for cargo..."
           autoComplete="off"
         />
+        {isNameValid && (
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <span className="text-green-500">✓</span>
+          </div>
+        )}
         {isFocused && searchResults.length > 0 && (
           <ul className="absolute left-0 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md z-10 overflow-y-auto max-h-52">
             {searchResults.map((cargo) => (
