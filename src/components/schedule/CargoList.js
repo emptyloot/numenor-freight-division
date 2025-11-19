@@ -62,7 +62,7 @@ const CargoList = ({ maxTotalQuantity = 250, maxCargoSlots = 10, maxQuantityPerS
               Total Quantity: {totalCargoQuantity} / {maxTotalQuantity}
             </p>
             <p>
-              Cargo Slots: {manifest.cargo.length} / {maxCargoSlots}
+              Cargo Slots: {totalSlotsConsumedByAll} / {maxCargoSlots}
             </p>
           </div>
         </div>
