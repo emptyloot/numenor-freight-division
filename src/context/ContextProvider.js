@@ -3,9 +3,9 @@ import { AuthProvider } from './AuthContext';
 import { DashboardProvider } from './DashboardContext';
 import { ManifestProvider } from './ShipmentManifestContext';
 import { ClaimProvider } from './ClaimContext';
-import { CargoProvider } from './CargoContext';
+import { CargoProvider } from './CargoContext'; // eslint-disable-line
 
-const contextProviders = [AuthProvider, DashboardProvider, ManifestProvider, ClaimProvider, CargoProvider];
+const contextProviders = [AuthProvider, CargoProvider, DashboardProvider, ManifestProvider, ClaimProvider];
 
 /**
  * @description A component that composes multiple context providers into a single provider.
