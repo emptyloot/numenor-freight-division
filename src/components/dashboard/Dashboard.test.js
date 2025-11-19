@@ -2,9 +2,11 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Dashboard from './Dashboard';
 import { useDashboard } from '../../context/DashboardContext';
+import '../../firebase/firebase';
 
 // Mock the useDashboard hook from the context
 jest.mock('../../context/DashboardContext');
+jest.mock('../../firebase/firebase');
 
 // Mock the ShipmentCard component to simplify testing and focus on the Dashboard logic
 jest.mock('./ShipmentCard', () => ({ shipment }) => (

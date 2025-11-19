@@ -7,6 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import * as firestore from 'firebase/firestore';
 
 // Mock dependencies
+jest.mock('../../firebase/firebase');
 jest.mock('../../context/AuthContext');
 jest.mock('../../context/DashboardContext');
 jest.mock('react-router-dom', () => ({

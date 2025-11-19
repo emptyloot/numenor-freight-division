@@ -28,6 +28,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 // 3. Mock the useAuth hook
+jest.mock('../../firebase/firebase');
 jest.mock('../../context/AuthContext');
 jest.mock('../../context/ShipmentManifestContext');
 jest.mock('../../context/ClaimContext');
