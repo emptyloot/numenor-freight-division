@@ -38,7 +38,7 @@ describe('ClaimProvider', () => {
     axios.get.mockClear();
     normalizeString.mockClear();
     // Mock normalizeString to return the lowercased string for predictable filtering
-    normalizeString.mockImplementation((str) => str.toLowerCase());
+    normalizeString.mockImplementation((text) => text.toLowerCase());
   });
 
   it('fetches and provides claims and count on successful load', async () => {
@@ -105,7 +105,11 @@ describe('ClaimProvider', () => {
 
   it('returns null from getClaimLocation if claim is invalid', async () => {
     axios.get.mockResolvedValueOnce({ data: { claims: [{ name: 'Incomplete' }], count: 1 } });
-    render(<ClaimProvider><MockClaimConsumer /></ClaimProvider>);
+    render(
+      <ClaimProvider>
+        <MockClaimConsumer />
+      </ClaimProvider>
+    );
     await waitFor(() => expect(screen.getByTestId('loading').textContent).toBe('false'));
     expect(screen.getByTestId('claim-location').textContent).toBe('null');
   });
