@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import CreateShipment from './CreateShipment';
 import { useAuth } from '../../context/AuthContext';
 import { useClaims } from '../../context/ClaimContext';
+import { useCargo } from '../../context/CargoContext';
 
 // Mock the useNavigate hook from react-router-dom
 const mockNavigate = jest.fn();
@@ -15,6 +16,9 @@ jest.mock('react-router-dom', () => ({
    */
   useNavigate: () => mockNavigate,
 }));
+
+// Mock the firebase module to prevent it from initializing Firebase services
+jest.mock('../../firebase/firebase');
 
 // Mock the useManifest hook
 const mockHandleScheduleShipment = jest.fn();
@@ -50,6 +54,7 @@ jest.mock('../../context/ShipmentManifestContext', () => ({
 // Mock the useAuth hook
 jest.mock('../../context/AuthContext');
 jest.mock('../../context/ClaimContext');
+jest.mock('../../context/CargoContext');
 jest.mock('../inputLocation/InputLocation', () => () => <div data-testid="input-location-mock" />);
 
 /**
@@ -68,6 +73,10 @@ describe('CreateShipment', () => {
     useClaims.mockReturnValue({
       findClaimByName: jest.fn(),
       getClaimLocation: jest.fn(),
+    });
+    useCargo.mockReturnValue({
+      cargoTypes: [],
+      findCargoByName: jest.fn(),
     });
   });
 

@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import LogoutButton from './LogoutButton';
 import { useAuth } from '../../context/AuthContext';
 // Mock the useAuth hook
+jest.mock('../../firebase/firebase');
 jest.mock('../../context/AuthContext');
 describe('LogoutButton', () => {
   test('renders the logout button', () => {

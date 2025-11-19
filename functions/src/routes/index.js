@@ -5,10 +5,11 @@ const cors = require('cors');
 
 const authController = require('./authController');
 const claimsController = require('./claimsController');
+const cargoController = require('./cargoController');
 // Initialize Firebase Admin SDK
 if (process.env.FUNCTIONS_EMULATOR) {
   admin.initializeApp({
-    projectId: 'numenor-freight-division',
+    projectId: 'numenor-freight-staging',
   });
 } else {
   admin.initializeApp();
@@ -24,7 +25,7 @@ const allowedOrigins = [webOrigin, fbOrigin]; // eslint-disable-line
 
 // Add localhost only when running in the emulator
 if (process.env.FUNCTIONS_EMULATOR) {
-  allowedOrigins.push('http://localhost:5000');
+  allowedOrigins.push('http://localhost:5005');
 }
 app.use(
   cors({
@@ -58,6 +59,9 @@ app.post('/api/auth/discord', authController.handleDiscordAuth);
 
 // Claims routes
 app.get('/api/claims', claimsController.getClaims);
+
+// Cargo routes
+app.get('/api/cargo', cargoController.getCargo);
 
 // Export the Express app as a cloud function
 exports.api = functions.https.onRequest(app);
