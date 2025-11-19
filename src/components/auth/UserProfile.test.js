@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import UserProfile from './UserProfile';
 import { useAuth } from '../../context/AuthContext';
 //Mock
+jest.mock('../../firebase/firebase');
 jest.mock('../../context/AuthContext');
 const mockedUseAuth = useAuth;
 

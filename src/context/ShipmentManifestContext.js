@@ -3,6 +3,7 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
 import { useAuth } from './AuthContext';
 import Calculator from '../utils/Calculator';
+import { useCargo } from './CargoContext';
 
 const ManifestContext = createContext(null);
 
@@ -33,21 +34,11 @@ const DEFAULT_PORT = {
 export const ManifestProvider = ({ children }) => {
   const INITIAL_MANIFEST_STATE = {
     port: [DEFAULT_PORT, DEFAULT_PORT],
-    cargo: [
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-      DEFAULT_CARGO_ITEM,
-    ],
+    cargo: [DEFAULT_CARGO_ITEM],
   };
 
   const { currentUser } = useAuth();
+  const { cargoTypes } = useCargo();
   const [manifest, setManifest] = useState(INITIAL_MANIFEST_STATE);
 
   /** @description Resets the manifest state to its initial default values. */
@@ -184,6 +175,18 @@ export const ManifestProvider = ({ children }) => {
     if (!hasCargo) {
       throw new Error('At least one cargo item with a quantity greater than zero is required.');
     }
+
+    // Validate that every cargo item with a quantity has a valid name
+    const invalidCargo = cargo.find(
+      (item) => Number(item.quantity) > 0 && !cargoTypes.some((t) => t.name === item.name)
+    );
+
+    if (invalidCargo) {
+      throw new Error(
+        `Invalid cargo name found: "${invalidCargo.name || '(empty)'}". Please select a valid cargo from the list.`
+      );
+    }
+
     const quote = Calculator(manifest);
     // 2. Prepare data for Firestore
     const shipmentData = {

@@ -2,11 +2,14 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { ManifestProvider, useManifest } from './ShipmentManifestContext';
 import { useAuth } from './AuthContext';
+import { useCargo } from './CargoContext';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
 
 // Mock the useAuth hook
 jest.mock('./AuthContext');
+
+jest.mock('./CargoContext');
 
 // Mock Firestore
 jest.mock('../firebase/firebase', () => ({
@@ -49,6 +52,10 @@ describe('ShipmentManifestContext', () => {
    */
   beforeEach(() => {
     useAuth.mockReturnValue({ currentUser: { uid: 'test-user' } });
+    useCargo.mockReturnValue({
+      cargoTypes: [{ name: 'Gold' }, { name: 'Silver' }],
+      findCargoByName: jest.fn(),
+    });
     addDoc.mockClear();
     collection.mockClear();
     serverTimestamp.mockClear();
