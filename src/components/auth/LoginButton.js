@@ -59,7 +59,7 @@ const LoginButton = ({ children }) => {
       type="button"
       onClick={handleLogin}
       disabled={loading || !clientId}
-      className="bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-2 px-4 rounded-md flex items-center justify-center w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
+      className="bg-discord-blue hover:bg-discord-blue-dark text-off-white font-bold py-2 px-4 rounded-md flex items-center justify-center w-full disabled:bg-gray-400 disabled:cursor-not-allowed"
     >
       {loading ? 'Loading...' : children || 'Login with Discord'}
     </button>

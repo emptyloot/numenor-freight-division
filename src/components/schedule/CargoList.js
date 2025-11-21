@@ -75,7 +75,7 @@ const CargoList = ({ maxTotalQuantity = 250, maxCargoSlots = 10, maxQuantityPerS
               <button
                 type="button"
                 onClick={() => removeCargoItem(index)}
-                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-red-600 hover:bg-red-700 text-off-white font-bold py-2 px-4 rounded"
                 aria-label={`Remove Cargo Hold ${index + 1}`}
               >
                 Remove
@@ -92,7 +92,7 @@ const CargoList = ({ maxTotalQuantity = 250, maxCargoSlots = 10, maxQuantityPerS
           type="button"
           onClick={addCargoItem}
           disabled={!canAddCargo}
-          className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-off-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Add Cargo Slot
         </button>

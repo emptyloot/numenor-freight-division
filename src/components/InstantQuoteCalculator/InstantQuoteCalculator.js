@@ -33,13 +33,13 @@ const InstantQuoteCalculator = () => {
     setQuote(hexCost);
   }, [manifest]);
   return (
-    <div className="bg-[#4A6572]/80 p-8 rounded-2x1 mt-12 backdrop-blur-sm border border-white/10 max-w-xl mx-auto">
+    <div className="bg-primary-light/80 p-8 rounded-2x1 mt-12 backdrop-blur-sm border border-white/10 max-w-xl mx-auto">
       <h2 className="text-2x1 font-semibold mb-6">"Instant Quote Calculator"</h2>
       <form className="space-y-4">
         <LocationInput baseId="start" label="Port of Origin" portIndex={0} />
         <LocationInput baseId="end" label="Final Destination" portIndex={1} />
         <div className="pt-4">
-          <div className="w-full p-3 rounded-lg bg-gray-700/60 text-x1 font-bold text-[#ffc107]">
+          <div className="w-full p-3 rounded-lg bg-gray-700/60 text-x1 font-bold text-accent">
             {quote > 0 ? `${quote.toLocaleString()} Hex +#*` : '--- Hex +#*'}
           </div>
         </div>
@@ -49,7 +49,7 @@ const InstantQuoteCalculator = () => {
             <button
               type="button"
               onClick={handleScheduleClick}
-              className="w-full bg-[#FFC107] text-[#0b2545] font-bold text-lg p-3 rounded-full hover:opacity-90 transition-opacity"
+              className="w-full bg-accent text-primary-dark font-bold text-lg p-3 rounded-full hover:opacity-90 transition-opacity"
             >
               Schedule This Delivery
             </button>
