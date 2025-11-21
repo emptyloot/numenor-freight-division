@@ -11,6 +11,7 @@
     "express": "^4.18.2",
     "firebase-admin": "^12.1.1",
     "firebase-functions": "^5.0.1",
+    "@google-cloud/pubsub": "^4.0.0",
     "numenor": "file:.."
   },
   "devDependencies": {
