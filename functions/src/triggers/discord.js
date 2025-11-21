@@ -2,9 +2,8 @@ const axios = require('axios');
 
 /**
  * Sends a message to a specified Discord channel using a bot.
- * @param {string} message The message content to send.
- * @param payload
- * @param {string} [channelId] The ID of the channel to send the message to. Defaults to the one in the environment variables.
+ * @param {object} payload json formmat string for rich embeds
+ * @param {string} channelId The ID of the channel to send the message to. Defaults to the one in the environment variables.
  * @returns {Promise<void>}
  */
 const sendDiscordMessage = async (payload, channelId) => {

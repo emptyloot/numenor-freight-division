@@ -1,9 +1,9 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
-const { PubSub } = require('@google-cloud/pubsub');
+const { PubSub } = require('@google-cloud/pubsub'); //eslint-disable-line
 const { sendDiscordMessage } = require('./discord');
 
-const pubsub = new PubSub();
+const pubsub = new PubSub(); //eslint-disable-line
 
 /**
  * @param {number} ms The number of milliseconds to sleep.
@@ -14,14 +14,14 @@ function sleep(ms) {
 }
 
 exports.onNewDataEntry = functions.firestore.document('shipments/{documentId}').onCreate(async (snap, context) => {
-  const topic = pubsub.topic('shipments-topic');
+  const topic = pubsub.topic('shipments-topic'); //eslint-disable-line
   const documentId = context.params.documentId;
   await topic.publishMessage({ data: Buffer.from(documentId) });
 });
 
 exports.processShipment = functions
   .runWith({ concurrency: 1 })
-  .pubsub.topic('shipments-topic')
+  .pubsub.topic('shipments-topic') //eslint-disable-line
   .onPublish(async (message) => {
     const documentId = message.data ? Buffer.from(message.data, 'base64').toString() : null;
     if (!documentId) {
