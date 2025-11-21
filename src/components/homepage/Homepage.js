@@ -11,7 +11,7 @@ Programmatically navigates the user to the '/schedule' route to fill out the shi
 @returns {void}
    */
   return (
-    <main className="container mx-auto p-4 text-center text-[#EDF2F4]">
+    <main className="container mx-auto p-4 text-center text-off-white">
       <div>
         {/*Inspiring message */}
         <h1 className="text 4x1 md:text-5x1 font-bold mt-8">"By land or sea, the world turns on our trade"</h1>

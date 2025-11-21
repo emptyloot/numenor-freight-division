@@ -87,7 +87,7 @@ const InputCargo = ({ cargoIndex, maxQuantity = '100' }) => {
         <input
           id={`cargo${cargoSlot}Name`}
           type="text"
-          className="w-full p-3 rounded-lg bg-white/90 text-black placeholder-gray-500"
+          className="w-full p-3 rounded-lg bg-off-white/90 text-primary-dark placeholder-gray-500"
           value={search}
           onChange={handleSearchChange}
           onFocus={() => setIsFocused(true)}

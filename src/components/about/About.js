@@ -4,7 +4,7 @@
  */
 function About() {
   return (
-    <main className="container mx-auto p-4 text-center text-[#EDF2F4]">
+    <main className="container mx-auto p-4 text-center text-off-white">
       <div className="max-w-2xl mx-auto mt-12">
         <h1 className="text-4xl font-bold">About Númenor Freight Division</h1>
         <p className="mt-8 text-lg">

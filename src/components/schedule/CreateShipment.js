@@ -52,10 +52,10 @@ function CreateShipment() {
   }, [manifest]);
 
   return (
-    <main className="container mx-auto p-4 text-center text-[#EDF2F4]">
+    <main className="container mx-auto p-4 text-center text-off-white">
       <div className="max-w-2xl mx-auto">
         <h1>Commission a Voyage</h1>
-        <div className="bg-[#4A6572]/80 p-8 rounded-2x1 mt-12 backdrop-blur-sm border border-white/10">
+        <div className="bg-primary-light/80 p-8 rounded-2x1 mt-12 backdrop-blur-sm border border-white/10">
           <h2>Shipment Manifest</h2>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <fieldset className="space-y-4">
@@ -68,14 +68,14 @@ function CreateShipment() {
 
             <fieldset>
               <div className="pt-4">
-                <div className="w-full p-3 rounded-lg bg-gray-700/60 text-x1 font-bold text-[#ffc107]">
+                <div className="w-full p-3 rounded-lg bg-gray-700/60 text-x1 font-bold text-accent">
                   {quote > 0 ? `${quote.toLocaleString()} Hex` : '--- Hex'}
                 </div>
               </div>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#FFC107] text-[#0b2545] font-bold text-lg p-3 rounded-full hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-accent text-primary-dark font-bold text-lg p-3 rounded-full hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Scheduling...' : 'Schedule Shipment'}
               </button>
