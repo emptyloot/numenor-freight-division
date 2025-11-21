@@ -150,12 +150,11 @@ const ShipmentDetails = () => {
         <p>
           <span className="font-semibold">Driver:</span> {shipment.driverName || 'Unassigned'}
         </p>
-        {currentUser.role === 'staff' ||
-          (currentUser.role === 'driver' && (
-            <p>
-              <span className="font-semibold">Client:</span> {shipment.client || 'Unassigned'}
-            </p>
-          ))}
+        {(currentUser.role === 'staff' || currentUser.role === 'driver') && (
+          <p>
+            <span className="font-semibold">Client:</span> {shipment.client || 'Unassigned'}
+          </p>
+        )}
         {/* Cargo Manifest Display */}
         <div className="mt-4 border-t pt-4">
           <h2 className="text-xl font-bold mb-2">Cargo Manifest</h2>
