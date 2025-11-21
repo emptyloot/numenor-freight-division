@@ -17,24 +17,6 @@ Programmatically navigates the user to the '/schedule' route to fill out the shi
         <h1 className="text 4x1 md:text-5x1 font-bold mt-8">"By land or sea, the world turns on our trade"</h1>
         {/*Calculator */}
         <InstantQuoteCalculator />
-        {/*Steps to follow */}
-        <div className="mt-24 text-lg space-y-2">
-          <p>Getting your coordinates:</p>
-          <p>
-            Step 1: Visit{' '}
-            <a
-              href="https://bitjita.com/claims"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:underline"
-            >
-              Bitjita.com/claims
-            </a>{' '}
-            and look up your pickup and destination settlements.
-          </p>
-          <p>Step 2: Copy the N (North) and E (East) values for each.</p>
-          <p>Step 3: Paste them below to calculate your route.</p>
-        </div>
       </div>
     </main>
   );
