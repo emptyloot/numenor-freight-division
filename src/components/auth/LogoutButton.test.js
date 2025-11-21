@@ -28,7 +28,7 @@ describe('LogoutButton', () => {
     const buttonElement = screen.getByRole('button', { name: /Logout/i });
     expect(buttonElement).toHaveClass('bg-red-500');
     expect(buttonElement).toHaveClass('hover:bg-red-700');
-    expect(buttonElement).toHaveClass('text-white');
+    expect(buttonElement).toHaveClass('text-off-white');
     expect(buttonElement).toHaveClass('font-bold');
     expect(buttonElement).toHaveClass('py-2');
     expect(buttonElement).toHaveClass('px-4');

@@ -75,9 +75,9 @@ describe('LoginButton', () => {
   test('has correct styling', async () => {
     render(<LoginButton />);
     const buttonElement = await screen.findByRole('button', { name: /Login with Discord/i });
-    expect(buttonElement).toHaveClass('bg-[#5865F2]');
-    expect(buttonElement).toHaveClass('hover:bg-[#4752C4]');
-    expect(buttonElement).toHaveClass('text-white');
+    expect(buttonElement).toHaveClass('bg-discord-blue');
+    expect(buttonElement).toHaveClass('hover:bg-discord-blue-dark');
+    expect(buttonElement).toHaveClass('text-off-white');
     expect(buttonElement).toHaveClass('font-bold');
     expect(buttonElement).toHaveClass('py-2');
     expect(buttonElement).toHaveClass('px-4');

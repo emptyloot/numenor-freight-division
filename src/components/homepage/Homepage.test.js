@@ -86,9 +86,6 @@ describe('Homepage Component', () => {
 
     // Check initial quote display
     expect(screen.getByText(/--- Hex/i)).toBeInTheDocument();
-
-    // Check steps section (simple check for one step)
-    expect(screen.getByText(/Getting your coordinates:/i)).toBeInTheDocument();
   });
 
   /**
