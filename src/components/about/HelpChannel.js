@@ -1,8 +1,9 @@
 /**
- *
- * @param root0
- * @param root0.className
- * @param root0.children
+ * @description A component that displays information about how to get help with job submissions on Discord.
+ * @param {object} root0 - The props object.
+ * @param {string} root0.className - Additional CSS classes to apply to the component.
+ * @param {object} root0.children - The content to be rendered inside the component.
+ * @returns {object} react component
  */
 const HelpChannel = ({ className, children }) => {
   const defaultClassName = 'bg-primary-light/80 p-4 rounded-2xl backdrop-blur-sm border border-white/10 text-off-white';
