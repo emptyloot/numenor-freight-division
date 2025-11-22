@@ -165,6 +165,7 @@ describe('DashboardContext', () => {
   });
 
   test('handles errors during shipment fetching', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     useAuth.mockReturnValue({ currentUser: { uid: 'test-user-123' } });
     const mockError = new Error('Permission denied');
 
@@ -182,6 +183,7 @@ describe('DashboardContext', () => {
     await waitFor(() => expect(screen.getByTestId('loading')).toHaveTextContent('false'));
     expect(screen.getByTestId('error')).toHaveTextContent('Permission denied');
     expect(screen.getByTestId('shipments')).toHaveTextContent('[]');
+    consoleSpy.mockRestore();
   });
 
   test('unsubscribes from snapshot listener on unmount', () => {

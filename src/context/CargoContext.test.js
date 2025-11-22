@@ -51,6 +51,9 @@ describe('CargoProvider', () => {
   });
 
   it('handles errors during fetch', async () => {
+    // 1. MUTE the console
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
     const errorMessage = 'Network Error';
     axios.get.mockRejectedValueOnce(new Error(errorMessage));
 
@@ -66,6 +69,9 @@ describe('CargoProvider', () => {
 
     expect(screen.getByTestId('error').textContent).toBe(errorMessage);
     expect(screen.getByTestId('cargo-types').textContent).toBe('[]');
+
+    // 2. UN-MUTE the console. Important!
+    consoleSpy.mockRestore();
   });
 
   it('finds cargo by name', async () => {
