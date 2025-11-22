@@ -12,7 +12,7 @@ const createShipmentPayload = (documentId, shipmentData) => {
     embeds: [
       {
         title: 'New Shipment Created',
-        description: `A new shipment for client ${shipmentData.client} has been added to the system.`, 
+        description: `A new shipment for client ${shipmentData.client} has been added to the system.`,
         color: 5814783, // A nice purple color (#58b9ff)
         fields: [
           { name: 'Origin', value: shipmentData.port[0].name || 'N/A', inline: true },
