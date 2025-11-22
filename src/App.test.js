@@ -2,6 +2,13 @@ import { render, screen, cleanup } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 
+jest.mock('axios', () => ({
+  get: jest.fn(() => Promise.resolve({ data: {} })),
+  post: jest.fn(() => Promise.resolve({ data: {} })),
+  put: jest.fn(() => Promise.resolve({ data: {} })),
+  delete: jest.fn(() => Promise.resolve({ data: {} })),
+}));
+
 jest.mock('./components/homepage/Homepage.js', () => () => <div data-testid="homepage">Homepage</div>);
 jest.mock('./components/background/Background.js', () => () => <div data-testid="background">Background</div>);
 jest.mock('./components/header/Header.js', () => () => <div data-testid="header">Header</div>);
@@ -21,7 +28,7 @@ jest.mock('./components/dashboard/ShipmentDetails.js', () => () => (
 describe('App component', () => {
   test('renders homepage by default', () => {
     render(
-      <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={['/']}>
         <App />
       </MemoryRouter>
     );
@@ -30,7 +37,7 @@ describe('App component', () => {
 
   test('renders about page on /about route', () => {
     render(
-      <MemoryRouter initialEntries={['/about']}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={['/about']}>
         <App />
       </MemoryRouter>
     );
@@ -39,7 +46,7 @@ describe('App component', () => {
 
   test('renders create shipment page on /schedule route within a protected route', () => {
     render(
-      <MemoryRouter initialEntries={['/schedule']}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={['/schedule']}>
         <App />
       </MemoryRouter>
     );
@@ -49,7 +56,7 @@ describe('App component', () => {
 
   test('renders dashboard page on /dashboard route within a protected route', () => {
     render(
-      <MemoryRouter initialEntries={['/dashboard']}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={['/dashboard']}>
         <App />
       </MemoryRouter>
     );
@@ -59,7 +66,10 @@ describe('App component', () => {
 
   test('renders shipment details page on /shipment/:shipmentId route within a protected route', () => {
     render(
-      <MemoryRouter initialEntries={['/shipment/123']}>
+      <MemoryRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        initialEntries={['/shipment/123']}
+      >
         <App />
       </MemoryRouter>
     );
@@ -69,7 +79,10 @@ describe('App component', () => {
 
   test('renders auth callback page on /auth/callback route', () => {
     render(
-      <MemoryRouter initialEntries={['/auth/callback']}>
+      <MemoryRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        initialEntries={['/auth/callback']}
+      >
         <App />
       </MemoryRouter>
     );
@@ -80,7 +93,7 @@ describe('App component', () => {
     const routes = ['/', '/about', '/schedule', '/dashboard', '/shipment/123', '/auth/callback'];
     routes.forEach((route) => {
       render(
-        <MemoryRouter initialEntries={[route]}>
+        <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={[route]}>
           <App />
         </MemoryRouter>
       );
