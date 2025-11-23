@@ -5,10 +5,7 @@ describe('createShipmentPayload', () => {
     const documentId = 'test-shipment-123';
     const shipmentData = {
       client: 'Test Client Inc.',
-      port: [
-        { name: 'Port A' },
-        { name: 'Port B' },
-      ],
+      port: [{ name: 'Port A' }, { name: 'Port B' }],
       cargo: [
         { quantity: 100, name: 'Widgets' },
         { quantity: 50, name: 'Gadgets' },
@@ -26,13 +23,19 @@ describe('createShipmentPayload', () => {
     // Check the embed object
     const embed = payload.embeds[0];
     expect(embed).toHaveProperty('title', 'New Shipment Created');
-    expect(embed).toHaveProperty('description', 'A new shipment for client Test Client Inc. has been added to the system.');
+    expect(embed).toHaveProperty(
+      'description',
+      'A new shipment for client Test Client Inc. has been added to the system.'
+    );
     expect(embed).toHaveProperty('color', 5814783);
     expect(embed).toHaveProperty('timestamp');
     // Check if timestamp is a valid ISO 8601 date string
+    /**
+     * @param {string} s - The string to check.
+     * @returns {boolean} True if the string is a valid ISO 8601 date string, false otherwise.
+     */
     const isISODateString = (s) => new Date(s).toISOString() === s;
     expect(isISODateString(embed.timestamp)).toBe(true);
-
 
     // Check the fields
     expect(embed).toHaveProperty('fields');
@@ -64,10 +67,7 @@ describe('createShipmentPayload', () => {
     const documentId = 'test-shipment-456';
     const shipmentData = {
       client: 'Another Client',
-      port: [
-        {},
-        {}
-      ],
+      port: [{}, {}],
       cargo: [],
     };
 
