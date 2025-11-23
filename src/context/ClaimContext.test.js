@@ -64,6 +64,7 @@ describe('ClaimProvider', () => {
   });
 
   it('handles errors during fetch', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     const errorMessage = 'Failed to fetch';
     axios.get.mockRejectedValueOnce(new Error(errorMessage));
 
@@ -80,6 +81,7 @@ describe('ClaimProvider', () => {
     expect(screen.getByTestId('error').textContent).toBe(errorMessage);
     expect(screen.getByTestId('claims').textContent).toBe('[]');
     expect(screen.getByTestId('count').textContent).toBe('0');
+    consoleSpy.mockRestore();
   });
 
   it('finds a claim by name and gets its location', async () => {
