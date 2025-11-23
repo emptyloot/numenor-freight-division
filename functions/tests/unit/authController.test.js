@@ -57,6 +57,27 @@ describe('getAuthConfig', () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith('Server configuration error.');
   });
+
+  it('should handle errors when retrieving the client ID', () => {
+    process.env.DISCORD_CLIENT_ID = 'test-client-id';
+
+    const req = {};
+    const res = {
+      json: jest.fn(() => {
+        throw new Error('Test error');
+      }),
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn(),
+    };
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    getAuthConfig(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith('Server configuration error.');
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
+  });
 });
 
 describe('handleDiscordAuth', () => {

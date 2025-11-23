@@ -96,4 +96,76 @@ describe('getCargo', () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ message: 'Failed to fetch initial cargo data.' });
   });
+
+  it('should return 500 and log error if fetched cargo data is not an array and cache is empty', async () => {
+    const req = {};
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    admin.firestore().get.mockResolvedValue({ exists: false });
+    axios.get.mockResolvedValue({ data: { cargos: 'not an array' } }); //eslint-disable-line
+
+    await getCargo(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Failed to fetch initial cargo data.' });
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error fetching cargo from external API:',
+      'Cargo API did not return a valid array.'
+    );
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should fetch new cargo in background if cache is stale', async () => {
+    const req = {};
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const staleCacheDoc = {
+      exists: true,
+      /**
+       * @returns {object} data
+       */
+      data: () => ({
+        cargo: [{ id: 1, name: 'Stale Cargo' }],
+        timestamp: {
+          /**
+           * @returns {object} toDate
+           */
+          toDate: () => new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days ago
+        },
+      }),
+    };
+    admin.firestore().get.mockResolvedValue(staleCacheDoc);
+    axios.get.mockResolvedValue({ data: { cargos: [{ id: 2, name: 'New Cargo' }] } }); //eslint-disable-line
+
+    await getCargo(req, res);
+
+    expect(res.json).toHaveBeenCalledWith({ cargo: [{ id: 1, name: 'Stale Cargo' }], count: 1 });
+
+    // Give the event loop a chance to run the background fetch
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(axios.get).toHaveBeenCalled();
+  });
+
+  it('should return a 500 error if there is an error getting the cache', async () => {
+    const req = {};
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    admin.firestore().get.mockRejectedValue(new Error('Firestore error'));
+
+    await getCargo(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Failed to fetch cargo data.', error: 'Firestore error' });
+  });
 });
