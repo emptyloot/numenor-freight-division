@@ -23,7 +23,11 @@ jest.mock('firebase-admin', () => {
 jest.mock('axios');
 
 describe('getCargo', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
@@ -82,6 +86,7 @@ describe('getCargo', () => {
   });
 
   it('should return a 500 error if fetching new cargo fails and cache is empty', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     const req = {};
     const res = {
       status: jest.fn().mockReturnThis(),
@@ -95,9 +100,11 @@ describe('getCargo', () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ message: 'Failed to fetch initial cargo data.' });
+    jest.restoreAllMocks();
   });
 
   it('should return 500 and log error if fetched cargo data is not an array and cache is empty', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     const req = {};
     const res = {
       status: jest.fn().mockReturnThis(),
@@ -117,6 +124,7 @@ describe('getCargo', () => {
       'Cargo API did not return a valid array.'
     );
     consoleErrorSpy.mockRestore();
+    jest.restoreAllMocks();
   });
 
   it('should fetch new cargo in background if cache is stale', async () => {

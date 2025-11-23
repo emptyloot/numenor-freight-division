@@ -30,6 +30,13 @@ jest.mock('firebase-admin', () => {
 });
 
 describe('getAuthConfig', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should return the Discord client ID', () => {
     process.env.DISCORD_CLIENT_ID = 'test-client-id';
 
@@ -44,6 +51,7 @@ describe('getAuthConfig', () => {
   });
 
   it('should return a 500 error if the client ID is not configured', () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     delete process.env.DISCORD_CLIENT_ID;
 
     const req = {};
@@ -81,7 +89,11 @@ describe('getAuthConfig', () => {
 });
 
 describe('handleDiscordAuth', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+  });
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
@@ -153,6 +165,7 @@ describe('handleDiscordAuth', () => {
   });
 
   it('should return a 500 error if authentication fails', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     const req = {
       body: { code: 'test-code' },
       headers: { origin: 'http://localhost:3000' },
