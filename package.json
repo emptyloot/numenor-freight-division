@@ -19,7 +19,9 @@
     "build": "react-scripts build",
     "lint": "eslint \"src/**/*.{js,jsx}\" \"functions/src/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx}\" \"functions/src/**/*.js\" \"functions/tests/**/*.js\" --fix",
-    "test": "react-scripts test --watchAll=false && (cd functions && npm test)",
+    "test:all": "react-scripts test --watchAll=false && (cd functions && npm test)",
+    "test:server": "cd functions && npm test",
+    "test": "react-scripts test --watchAll=false",
     "test:coverage": "react-scripts test --watchAll=false --coverage && (cd functions && npm test -- --coverage)",
     "eject": "react-scripts eject"
   },
