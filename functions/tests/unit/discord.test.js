@@ -6,7 +6,7 @@ jest.mock('axios');
 // Mock the wait utility
 jest.mock('../../src/utils/wait');
 
-const { wait } = require('../../src/utils/wait');
+const { wait: delay } = require('../../src/utils/wait');
 
 // Mock console methods to prevent logging during tests and to assert on them
 jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -45,16 +45,12 @@ describe('sendDiscordMessage', () => {
     // Assert: Verify that axios.post was called correctly
     const expectedUrl = `https://discord.com/api/v10/channels/${DISCORD_CHANNEL_ID}/messages`;
     expect(axios.post).toHaveBeenCalledTimes(1);
-    expect(axios.post).toHaveBeenCalledWith(
-      expectedUrl,
-      payload,
-      {
-        headers: {
-          Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    expect(axios.post).toHaveBeenCalledWith(expectedUrl, payload, {
+      headers: {
+        Authorization: `Bot ${DISCORD_BOT_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+    });
     expect(console.log).toHaveBeenCalledWith(`Successfully sent message to Discord channel ${DISCORD_CHANNEL_ID}`);
   });
 
@@ -76,7 +72,7 @@ describe('sendDiscordMessage', () => {
   it('should log an error if DISCORD_CHANNEL_ID is not set', async () => {
     // Arrange: Temporarily unset the environment variable
     delete process.env.DISCORD_CHANNEL_ID;
-    
+
     // Act: Call the function using a null channelId override
     await sendDiscordMessage(payload, null);
 
@@ -97,16 +93,14 @@ describe('sendDiscordMessage', () => {
         data: { retry_after: retryAfterSeconds },
       },
     };
-    axios.post
-      .mockRejectedValueOnce(mockRateLimitError)
-      .mockResolvedValueOnce({ status: 200, data: {} });
+    axios.post.mockRejectedValueOnce(mockRateLimitError).mockResolvedValueOnce({ status: 200, data: {} });
 
     // Act
     await sendDiscordMessage(payload);
 
     // Assert
-    expect(wait).toHaveBeenCalledTimes(1);
-    expect(wait).toHaveBeenCalledWith(retryAfterSeconds * 1000 + 200);
+    expect(delay).toHaveBeenCalledTimes(1);
+    expect(delay).toHaveBeenCalledWith(retryAfterSeconds * 1000 + 200);
     expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('Rate limit hit (429)'));
     expect(axios.post).toHaveBeenCalledTimes(2);
   });
@@ -119,16 +113,14 @@ describe('sendDiscordMessage', () => {
         data: {},
       },
     };
-    axios.post
-      .mockRejectedValueOnce(mockServerError)
-      .mockResolvedValueOnce({ status: 200, data: {} });
+    axios.post.mockRejectedValueOnce(mockServerError).mockResolvedValueOnce({ status: 200, data: {} });
 
     // Act
     await sendDiscordMessage(payload);
 
     // Assert
-    expect(wait).toHaveBeenCalledTimes(1);
-    expect(wait).toHaveBeenCalledWith(2000);
+    expect(delay).toHaveBeenCalledTimes(1);
+    expect(delay).toHaveBeenCalledWith(2000);
     expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('Discord Server Error (500)'));
     expect(axios.post).toHaveBeenCalledTimes(2);
   });
@@ -146,9 +138,9 @@ describe('sendDiscordMessage', () => {
 
     // Act & Assert
     await expect(sendDiscordMessage(payload, DISCORD_CHANNEL_ID, maxRetries)).rejects.toBe(mockServerError);
-    
+
     // Check that wait was called for the retries, but not for the final failure
-    expect(wait).toHaveBeenCalledTimes(maxRetries);
+    expect(delay).toHaveBeenCalledTimes(maxRetries);
     expect(axios.post).toHaveBeenCalledTimes(maxRetries + 1);
     expect(console.error).toHaveBeenCalledWith('Max retries reached. Failing.');
   });
@@ -165,7 +157,7 @@ describe('sendDiscordMessage', () => {
 
     // Act & Assert: Expect the function to reject with the same error
     await expect(sendDiscordMessage(payload)).rejects.toBe(mockFatalError);
-    
+
     // Verify that axios was only called once and no retries were attempted
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledWith('Fatal Error sending message:', mockFatalError.response.data);

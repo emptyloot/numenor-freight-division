@@ -4,7 +4,6 @@ import { useManifest } from '../../context/ShipmentManifestContext';
 import Calculator from '../../utils/Calculator';
 import InputLocation from '../inputLocation/InputLocation'; // Assuming this path is correct
 import CargoList from './CargoList';
-import HelpChannel from '../about/HelpChannel';
 
 /**
 @description Renders the protected page for scheduling a new shipment.
@@ -82,9 +81,6 @@ function CreateShipment() {
               </button>
             </fieldset>
           </form>
-        </div>
-        <div className="mt-12">
-          <HelpChannel />
         </div>
       </div>
     </main>

@@ -27,6 +27,7 @@ const allowedOrigins = [webOrigin, fbOrigin]; // eslint-disable-line
 // Add localhost only when running in the emulator
 if (process.env.FUNCTIONS_EMULATOR) {
   allowedOrigins.push('http://localhost:5005');
+  allowedOrigins.push('http://localhost:5000');
   allowedOrigins.push('http://127.0.0.1:5005');
 }
 app.use(

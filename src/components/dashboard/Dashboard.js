@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDashboard } from '../../context/DashboardContext';
 import ShipmentCard from './ShipmentCard';
+import HelpChannel from '../about/HelpChannel';
 
 /**
  * @description A component that displays the user's shipments in a grid of tiles.
@@ -30,6 +31,9 @@ const Dashboard = () => {
           ))}
         </div>
       )}
+      <div className="mt-12">
+        <HelpChannel />
+      </div>
     </main>
   );
 };
