@@ -12,7 +12,7 @@ jest.mock('firebase-admin', () => {
   };
   return {
     /**
-     *
+     * @returns {object} mocked firestore initialization
      */
     firestore: () => firestore,
     initializeApp: jest.fn(),
@@ -37,13 +37,13 @@ describe('getCargo', () => {
     const cacheDoc = {
       exists: true,
       /**
-       *
+       * @returns {object} mock data
        */
       data: () => ({
         cargo: [{ id: 1, name: 'Test Cargo' }],
         timestamp: {
           /**
-           *
+           * @returns {object} mock toDate
            */
           toDate: () => new Date(Date.now() - 1000), // 1 second ago
         },
@@ -69,7 +69,7 @@ describe('getCargo', () => {
     };
 
     admin.firestore().get.mockResolvedValue({ exists: false });
-    axios.get.mockResolvedValue({ data: { cargos: [{ id: 2, name: 'New Cargo' }] } });
+    axios.get.mockResolvedValue({ data: { cargos: [{ id: 2, name: 'New Cargo' }] } }); //eslint-disable-line
 
     await getCargo(req, res);
 

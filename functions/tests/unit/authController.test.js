@@ -17,13 +17,13 @@ jest.mock('firebase-admin', () => {
   };
   return {
     /**
-     *
+     * @returns {object} mockCreateCustomToken
      */
     auth: () => ({
       createCustomToken: mockCreateCustomToken,
     }),
     /**
-     *
+     * @returns {object} firestore object
      */
     firestore: () => firestore,
   };
