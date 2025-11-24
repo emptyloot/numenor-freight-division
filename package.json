@@ -13,6 +13,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "setup": "npm install && cd functions && npm install",
     "start:react": "react-scripts start",
     "serve:emulators": "firebase emulators:start --project demo-numenor-freight --import=./firebase-data --export-on-exit --only auth,functions,firestore,hosting,ui",
     "serve:emulators:bot": "firebase emulators:start --project demo-numenor-freight --import=./firebase-data --export-on-exit",
