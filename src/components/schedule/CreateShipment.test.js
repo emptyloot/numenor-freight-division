@@ -80,10 +80,15 @@ describe('CreateShipment', () => {
     });
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   /**
    * @description Verifies that the form renders and that a successful submission calls the handleScheduleShipment function.
    */
   test('renders the form and navigates on successful submission', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     render(
       <MemoryRouter>
         <CreateShipment />
@@ -101,6 +106,7 @@ describe('CreateShipment', () => {
    * @description Verifies that an error message is displayed to the user if the submission process fails.
    */
   test('displays an error message on submission failure', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     render(
       <MemoryRouter>
         <CreateShipment />
