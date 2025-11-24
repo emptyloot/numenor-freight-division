@@ -14,7 +14,9 @@
   },
   "scripts": {
     "start:react": "react-scripts start",
-    "serve:emulators": "firebase emulators:start --only functions,firestore,auth,hosting,pubsub",
+    "serve:emulators": "firebase emulators:start --project demo-numenor-freight --import=./firebase-data --export-on-exit --only auth,functions,firestore,hosting,ui",
+    "serve:emulators:bot": "firebase emulators:start --project demo-numenor-freight --import=./firebase-data --export-on-exit",
+    "start:bot": "npm run build && npm run serve:emulators:bot",
     "start": "npm run build && npm run serve:emulators",
     "build": "react-scripts build",
     "lint": "eslint \"src/**/*.{js,jsx}\" \"functions/src/**/*.js\" \"functions/tests/**/*.js\"",
