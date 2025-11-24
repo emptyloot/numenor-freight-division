@@ -10,7 +10,7 @@ const cargoController = require('./cargoController');
 // Initialize Firebase Admin SDK
 if (process.env.FUNCTIONS_EMULATOR) {
   admin.initializeApp({
-    projectId: 'numenor-freight-staging',
+    projectId: 'demo-numenor-freight',
   });
 } else {
   admin.initializeApp();
