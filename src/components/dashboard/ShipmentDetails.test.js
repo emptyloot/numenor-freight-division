@@ -62,6 +62,7 @@ describe('ShipmentDetails', () => {
   });
 
   test('displays error message on fetch failure', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     const errorMessage = 'Failed to load shipment details.';
     firestore.onSnapshot.mockImplementation((ref, success, error) => {
       error(new Error(errorMessage));

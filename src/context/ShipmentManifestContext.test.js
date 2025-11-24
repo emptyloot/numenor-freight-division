@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { ManifestProvider, useManifest } from './ShipmentManifestContext';
 import { useAuth } from './AuthContext';
 import { useCargo } from './CargoContext';
@@ -326,8 +326,9 @@ describe('ShipmentManifestContext', () => {
       fireEvent.click(screen.getByText('Fill Form'));
 
       await fireEvent.click(screen.getByText('Schedule'));
-
-      expect(addDoc).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(addDoc).toHaveBeenCalledTimes(1);
+      });
       expect(collection).toHaveBeenCalledWith(firestore, 'shipments');
       expect(serverTimestamp).toHaveBeenCalledTimes(1);
     });

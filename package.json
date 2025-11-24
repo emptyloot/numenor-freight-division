@@ -17,7 +17,7 @@
     "serve:emulators": "firebase emulators:start --only functions,firestore,auth,hosting,pubsub",
     "start": "npm run build && npm run serve:emulators",
     "build": "react-scripts build",
-    "lint": "eslint \"src/**/*.{js,jsx}\" \"functions/src/**/*.js\"",
+    "lint": "eslint \"src/**/*.{js,jsx}\" \"functions/src/**/*.js\" \"functions/tests/**/*.js\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx}\" \"functions/src/**/*.js\" \"functions/tests/**/*.js\" --fix",
     "test:all": "react-scripts test --watchAll=false && (cd functions && npm test)",
     "test:server": "cd functions && npm test",

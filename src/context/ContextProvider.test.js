@@ -39,6 +39,24 @@ jest.mock('./ShipmentManifestContext', () => ({
   ManifestProvider: ({ children }) => <div data-testid="manifest-provider">{children}</div>,
 }));
 
+jest.mock('./ClaimContext', () => ({
+  /**
+   * @param {object} root0 The props object.
+   * @param {object} root0.children The child components to be rendered within the provider.
+   * @returns {object}  A div element representing the ClaimProvider.
+   */
+  ClaimProvider: ({ children }) => <div data-testid="claim-provider">{children}</div>,
+}));
+
+jest.mock('./CargoContext', () => ({
+  /**
+   * @param {object} root0 The props object.
+   * @param {object} root0.children The child components to be rendered within the provider.
+   * @returns {object}  A div element representing the CargoProvider.
+   */
+  CargoProvider: ({ children }) => <div data-testid="cargo-provider">{children}</div>,
+}));
+
 describe('./ContextProvider', () => {
   it('renders children wrapped in all composed providers in the correct order', () => {
     /**
