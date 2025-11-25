@@ -40,7 +40,7 @@ jobs:
 
       # 6. Executes the test suite defined in package.json
       - name: Run Unit & Integration Tests 
-        run: npm test:all
+        run: npm run test:all
 
       # 7. Create .env file
       - name: Create .env file
