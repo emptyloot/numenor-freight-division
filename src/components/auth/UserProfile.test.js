@@ -46,7 +46,7 @@ describe('UserProfile', () => {
     mockedUseAuth.mockReturnValue({ currentUser: null });
     render(<UserProfile />);
     const usernameElement = screen.getByText('Guest');
-    expect(usernameElement).toHaveClass('text-white');
+    expect(usernameElement).toHaveClass('text-off-white');
     expect(usernameElement).toHaveClass('font-bold');
   });
 });

@@ -116,7 +116,7 @@ const ShipmentDetails = () => {
   const canUpdate = currentUser && ['staff', 'driver'].includes(currentUser.role);
 
   return (
-    <main className="container mx-auto p-4 text-[#EDF2F4]">
+    <main className="container mx-auto p-4 text-off-white">
       <button onClick={() => navigate(-1)} className="mb-4 text-blue-400 hover:underline">
         &larr; Back to Dashboard
       </button>

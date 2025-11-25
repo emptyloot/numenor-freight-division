@@ -44,10 +44,15 @@ const mockShipment = {
 describe('ShipmentDetails', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    window.alert = jest.fn();
     useParams.mockReturnValue({ shipmentId: 'ship123' });
     useNavigate.mockReturnValue(mockNavigate);
     useDashboard.mockReturnValue({ updateShipment: mockUpdateShipment });
     useAuth.mockReturnValue({ currentUser: null });
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks(); // Cleans up after tests finish
   });
 
   test('displays loading message initially', () => {
@@ -57,6 +62,7 @@ describe('ShipmentDetails', () => {
   });
 
   test('displays error message on fetch failure', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     const errorMessage = 'Failed to load shipment details.';
     firestore.onSnapshot.mockImplementation((ref, success, error) => {
       error(new Error(errorMessage));

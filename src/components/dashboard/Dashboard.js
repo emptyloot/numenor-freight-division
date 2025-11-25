@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDashboard } from '../../context/DashboardContext';
 import ShipmentCard from './ShipmentCard';
+import HelpChannel from '../about/HelpChannel';
 
 /**
  * @description A component that displays the user's shipments in a grid of tiles.
@@ -19,7 +20,7 @@ const Dashboard = () => {
   }
 
   return (
-    <main className="container mx-auto p-4 text-center text-[#EDF2F4]">
+    <main className="container mx-auto p-4 text-center text-off-white">
       <h1 className="text-2xl font-bold mb-4 text-left">My Shipments</h1>
       {shipments.length === 0 ? (
         <p>You have no shipments.</p>
@@ -30,6 +31,9 @@ const Dashboard = () => {
           ))}
         </div>
       )}
+      <div className="mt-12">
+        <HelpChannel />
+      </div>
     </main>
   );
 };

@@ -8,6 +8,10 @@
 
 # testing
 /coverage
+/functions/coverage
+
+# emulator testing
+/firebase-data
 
 # production
 /build
@@ -21,7 +25,6 @@
 .env.development.local
 .env.test.local
 .env.production.local
-*.env.*
 
 # deploy cache
 *.cache

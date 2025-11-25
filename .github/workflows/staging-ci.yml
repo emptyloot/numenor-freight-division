@@ -26,15 +26,15 @@ jobs:
 
       # 3. Installs dependencies
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci && cd functions && npm ci
 
       # 4. Runs ESLint
       - name: Lint Code # Analyzes the code for style consistency and potential errors
         run: npm run lint
 
       # 5. Runs Jest tests
-      - name: Run Tests # Executes the test suite defined in package.json
-        run: npm test -- --coverage --watchAll=false 
+      - name: Run All Coverage Tests # Executes the test suite defined in package.json
+        run: npm run test:coverage
 
       # 6. Runs the production build command (without deploying)
       - name: Build # Creates an optimized production build to catch build errors

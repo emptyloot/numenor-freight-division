@@ -30,15 +30,19 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      # 4. Analyzes the code for style consistency and potential errors
+      # 4. Install function dependencies
+      - name: Install Function Dependencies
+        run: cd functions && npm ci
+
+      # 5. Analyzes the code for style consistency and potential errors
       - name: Lint Code
         run: npm run lint
 
-      # 5. Executes the test suite
+      # 6. Executes the test suite
       - name: Run Unit & Integration Tests
-        run: npm test
+        run: npm run test:all
 
-      # 6. Create .env file
+      # 7. Create .env file
       - name: Create .env file
         run: |
           echo REACT_APP_FIREBASE_API_KEY=${{ vars.REACT_APP_FIREBASE_API_KEY }} >> .env
@@ -54,13 +58,9 @@ jobs:
           echo DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }} >> functions/.env
           echo DISCORD_CHANNEL_ID=${{ vars.DISCORD_CHANNEL_ID }} >> functions/.env
 
-      # 7. Builds the React application for production
+      # 8. Builds the React application for production
       - name: Build
         run: npm run build
-
-      # 8. Install function dependencies
-      - name: Install Function Dependencies
-        run: cd functions && npm ci
 
       # 9. Authenticate to Google Cloud using the staging secret
       - name: Authenticate to Google Cloud

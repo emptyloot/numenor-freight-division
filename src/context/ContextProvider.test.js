@@ -2,6 +2,13 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ContextProvider } from './ContextProvider'; // Adjust the import path
 
+jest.mock('axios', () => ({
+  get: jest.fn(() => Promise.resolve({ data: {} })),
+  post: jest.fn(() => Promise.resolve({ data: {} })),
+  put: jest.fn(() => Promise.resolve({ data: {} })),
+  delete: jest.fn(() => Promise.resolve({ data: {} })),
+}));
+
 // Mocking the individual providers for testing purposes
 // Assuming you have mock files set up or you mock them inline
 jest.mock('./AuthContext', () => ({
@@ -30,6 +37,24 @@ jest.mock('./ShipmentManifestContext', () => ({
    * @returns {object} A div element representing the ManifestProvider.
    */
   ManifestProvider: ({ children }) => <div data-testid="manifest-provider">{children}</div>,
+}));
+
+jest.mock('./ClaimContext', () => ({
+  /**
+   * @param {object} root0 The props object.
+   * @param {object} root0.children The child components to be rendered within the provider.
+   * @returns {object}  A div element representing the ClaimProvider.
+   */
+  ClaimProvider: ({ children }) => <div data-testid="claim-provider">{children}</div>,
+}));
+
+jest.mock('./CargoContext', () => ({
+  /**
+   * @param {object} root0 The props object.
+   * @param {object} root0.children The child components to be rendered within the provider.
+   * @returns {object}  A div element representing the CargoProvider.
+   */
+  CargoProvider: ({ children }) => <div data-testid="cargo-provider">{children}</div>,
 }));
 
 describe('./ContextProvider', () => {
