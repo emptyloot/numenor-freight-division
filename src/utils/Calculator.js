@@ -21,6 +21,7 @@ function Calculator(manifest) {
   const tpEnergyPerFruit = 20;
   const costPerDistance = 4;
   const capitalLocation = { north: 4005, east: 6577 };
+  const inventorySlotTPCost = 1.35;
 
   /**
    * @description calculates the distance between two points using EuclideanDistance
@@ -41,7 +42,8 @@ function Calculator(manifest) {
 
   //Calculate Outbound TP  Cost
   const outboundTpCost = Math.ceil(
-    (distanceErrorCorrectionTerm * distanceToCapital * tpEnergyPerDistance * pricePerFruit) / tpEnergyPerFruit
+    (distanceErrorCorrectionTerm * distanceToCapital * tpEnergyPerDistance * pricePerFruit * inventorySlotTPCost) /
+      tpEnergyPerFruit
   );
 
   //Calculate Transport Distance Cost
