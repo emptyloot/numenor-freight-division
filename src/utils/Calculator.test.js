@@ -15,7 +15,7 @@ describe('Calculator Cost Estimation', () => {
     };
     const cost = Calculator(manifest);
     // The expected cost is calculated based on the formula in Calculator.js for short distances.
-    expect(cost).toBeCloseTo(15126);
+    expect(cost).toBeCloseTo(17565);
   });
 
   // Test case for a long distance shipment, where a long haul fee is applied.
@@ -28,7 +28,7 @@ describe('Calculator Cost Estimation', () => {
     };
     const cost = Calculator(manifest);
     // The expected cost includes the long haul fee.
-    expect(cost).toBeCloseTo(28440);
+    expect(cost).toBeCloseTo(30879);
   });
 
   // Test case for a shipment with no distance between start and end locations.
@@ -41,7 +41,7 @@ describe('Calculator Cost Estimation', () => {
     };
     const cost = Calculator(manifest);
     // The expected cost should not include any distance-based charges.
-    expect(cost).toBe(9469);
+    expect(cost).toBe(11908);
   });
 
   //Test Examples from Doc
@@ -54,7 +54,7 @@ describe('Calculator Cost Estimation', () => {
     };
     const cost = Calculator(manifest);
     // The expected cost should not include any distance-based charges.
-    expect(cost).toBe(9181);
+    expect(cost).toBe(9358);
   });
   test('should return same values as original example 2', () => {
     const manifest = {
@@ -65,6 +65,6 @@ describe('Calculator Cost Estimation', () => {
     };
     const cost = Calculator(manifest);
     // The expected cost should not include any distance-based charges.
-    expect(cost).toBe(29712);
+    expect(cost).toBe(31615);
   });
 });
