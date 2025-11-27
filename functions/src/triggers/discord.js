@@ -24,13 +24,14 @@ const sendDiscordMessage = async (payload, channelId, maxRetries = 3) => {
   const url = `https://discord.com/api/v10/channels/${targetChannelId}/messages`;
 
   try {
-    await axios.post(url, payload, {
+    const response = await axios.post(url, payload, {
       headers: {
         Authorization: `Bot ${token}`,
         'Content-Type': 'application/json',
       },
     });
     console.log(`Successfully sent message to Discord channel ${targetChannelId}`);
+    return response.data.id;
   } catch (error) {
     return handleDiscordError(error, payload, targetChannelId, maxRetries);
   }
