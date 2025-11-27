@@ -187,7 +187,7 @@ export const ManifestProvider = ({ children }) => {
       );
     }
 
-    const quote = Calculator(manifest);
+    const quote = Calculator(manifest).costEstimate;
     // 2. Prepare data for Firestore
     const shipmentData = {
       ...manifest,
