@@ -15,18 +15,34 @@ exports.onNewDataEntry = functions.firestore.document('shipments/{documentId}').
 });
 
 exports.onUpdateDataEntry = functions.firestore.document('shipments/{documentId}').onUpdate(async (change, context) => {
+  console.log('Processing Update');
   const { documentId } = context.params;
   const newData = change.after.data();
   const oldData = change.before.data();
 
-  if (newData.status !== oldData.status) {
-    return;
-  }
+  if (newData && oldData) {
+    const driverChanged = newData.driverName !== oldData.driverName;
+    const statusChanged = newData.status !== oldData.status;
+    if (!driverChanged && !statusChanged) {
+      console.log(`Skipping Discord Update for ${documentId} (no changes made to driverName and status)`);
+      return null;
+    }
+    console.log(`Processing Discord Update for ${documentId}`);
 
-  const topic = pubsub.topic('shipments-topic'); //eslint-disable-line
-  const payload = { type: 'UPDATE', documentId, messageId: newData.discordMessageId };
-  await topic.publishMessage({ json: payload });
-  console.log(`Published UPDATE job for ${documentId}`);
+    const messageId = newData.discordMessageId;
+    if (!messageId) {
+      console.log(`Cannot update Discord: no message ID for ${documentId}`);
+      return null;
+    }
+    const payload = {
+      type: 'UPDATE',
+      documentId,
+      messageId,
+    };
+    await pubsub.topic('shipments-topic').publishMessage({ json: payload }); //eslint-disable-line
+    console.log(`Published UPDATE job for ${documentId}`);
+    return null;
+  }
 });
 
 exports.processShipment = functions
