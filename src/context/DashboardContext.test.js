@@ -27,11 +27,16 @@ jest.mock('firebase/firestore', () => ({
  */
 const TestConsumer = () => {
   const { shipments, loading, error } = useDashboard();
+  const formattedShipments = shipments.map((shipment) => ({
+    ...shipment,
+    // safe convert mock Timestamp to ISO String so it survives JSON.stringify
+    createdAt: shipment.createdAt?.toDate ? shipment.createdAt.toDate().toISOString() : shipment.createdAt,
+  }));
   return (
     <div>
       <div data-testid="loading">{String(loading)}</div>
       <div data-testid="error">{error ? error.message : 'null'}</div>
-      <div data-testid="shipments">{JSON.stringify(shipments)}</div>
+      <div data-testid="shipments">{JSON.stringify(formattedShipments)}</div>
     </div>
   );
 };
@@ -159,9 +164,10 @@ describe('DashboardContext', () => {
     const shipments = JSON.parse(screen.getByTestId('shipments').textContent);
     expect(shipments).toHaveLength(1);
     expect(shipments[0].id).toBe('ship1');
-    expect(shipments[0].destination).toBe('North:10 East:20');
-    expect(shipments[0].currentStatus).toBe('In Transit');
-    expect(new Date(shipments[0].lastUpdated)).toEqual(new Date('2023-01-01T12:00:00Z'));
+    expect(shipments[0].port[1].north).toBe(10);
+    expect(shipments[0].port[1].east).toBe(20);
+    expect(shipments[0].status).toBe('In Transit');
+    expect(shipments[0].createdAt).toBe('2023-01-01T12:00:00.000Z');
   });
 
   test('handles errors during shipment fetching', async () => {

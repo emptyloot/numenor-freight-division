@@ -4,7 +4,7 @@ import ShipmentDetails from './ShipmentDetails';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
 import { useParams, useNavigate } from 'react-router-dom';
-import * as firestore from 'firebase/firestore';
+import { auth } from '../../firebase/firebase';
 
 // Mock dependencies
 jest.mock('../../firebase/firebase');
@@ -15,23 +15,23 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn(),
   useNavigate: jest.fn(),
 }));
-jest.mock('firebase/firestore', () => ({
-  doc: jest.fn(),
-  onSnapshot: jest.fn(),
-  getFirestore: jest.fn(),
-  connectFirestoreEmulator: jest.fn(),
-}));
 
 const mockNavigate = jest.fn();
 const mockUpdateShipment = jest.fn();
 
 const mockShipment = {
   id: 'ship123',
-  status: 'in-transit',
+  userId: 'user123',
+  status: 'scheduled',
   paid: false,
   port: [
-    { north: '321', east: '654' },
-    { north: '123', east: '456' },
+    { name: 'Origin', north: '321', east: '654' },
+    { name: 'Destination', north: '123', east: '456' },
+  ],
+  cargo: [
+    { name: 'Iron Ore', quantity: 100 },
+    { name: 'Wood', quantity: 50 },
+    { name: 'Stone', quantity: 0 },
   ],
   createdAt: {
     /** @returns {Date} A Date object representing the creation date. */
@@ -47,60 +47,72 @@ describe('ShipmentDetails', () => {
     window.alert = jest.fn();
     useParams.mockReturnValue({ shipmentId: 'ship123' });
     useNavigate.mockReturnValue(mockNavigate);
-    useDashboard.mockReturnValue({ updateShipment: mockUpdateShipment });
+    useDashboard.mockReturnValue({
+      shipments: [mockShipment],
+      loading: false,
+      error: null,
+      updateShipment: mockUpdateShipment,
+    });
     useAuth.mockReturnValue({ currentUser: null });
+
+    // Mock for auth and fetch
+    auth.currentUser = {
+      getIdToken: jest.fn().mockResolvedValue('test-token'),
+    };
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        /**
+         * @description Mocks the `json()` method of the fetch Response object.
+         * It simulates a successful server response body indicating the shipment was cancelled.
+         * @returns {Promise<object>} A promise that resolves to the response data.
+         */
+        json: () => Promise.resolve({ message: 'Shipment cancelled!' }),
+      })
+    );
   });
 
   afterAll(() => {
     jest.restoreAllMocks(); // Cleans up after tests finish
+    delete global.fetch;
   });
 
-  test('displays loading message initially', () => {
-    firestore.onSnapshot.mockImplementation(() => () => {}); // No immediate callback
+  test('displays loading message when context is loading', () => {
+    useDashboard.mockReturnValue({
+      shipments: [],
+      loading: true,
+      error: null,
+      updateShipment: mockUpdateShipment,
+    });
     render(<ShipmentDetails />);
     expect(screen.getByText(/Loading shipment details.../i)).toBeInTheDocument();
   });
 
-  test('displays error message on fetch failure', async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    const errorMessage = 'Failed to load shipment details.';
-    firestore.onSnapshot.mockImplementation((ref, success, error) => {
-      error(new Error(errorMessage));
-      return () => {};
+  test('displays error message when context has an error', () => {
+    const errorMessage = 'Failed to load shipments.';
+    useDashboard.mockReturnValue({
+      shipments: [],
+      loading: false,
+      error: new Error(errorMessage),
+      updateShipment: mockUpdateShipment,
     });
     render(<ShipmentDetails />);
-    await waitFor(() => {
-      expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    });
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
 
-  test('displays "shipment not found" message', async () => {
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns false, indicating the document does not exist. */
-        exists: () => false,
-      });
-      return () => {};
+  test('displays "shipment not found" message if not in context', () => {
+    useDashboard.mockReturnValue({
+      shipments: [], // Empty array
+      loading: false,
+      error: null,
+      updateShipment: mockUpdateShipment,
     });
     render(<ShipmentDetails />);
-    await waitFor(() => {
-      expect(screen.getByText(/Shipment not found/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText(/Shipment not found/i)).toBeInTheDocument();
   });
 
-  test('renders shipment details for a regular user', async () => {
-    useAuth.mockReturnValue({ currentUser: { role: 'user' } });
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns true, indicating the document exists. */
-        exists: () => true,
-        id: 'ship123',
-        /** @returns {object} The mock shipment data. */
-        data: () => mockShipment,
-      });
-      return () => {};
-    });
-
+  test('renders shipment details for a regular user and displays cargo', async () => {
+    useAuth.mockReturnValue({ currentUser: { role: 'user', uid: 'anotherUser' } });
     render(<ShipmentDetails />);
 
     await waitFor(() => {
@@ -109,9 +121,14 @@ describe('ShipmentDetails', () => {
     expect(screen.getByText('ID:')).toBeInTheDocument();
     expect(screen.getByText('ship123')).toBeInTheDocument();
     expect(screen.getByText('Status:')).toBeInTheDocument();
-    expect(screen.getByText('in-transit')).toBeInTheDocument();
+    expect(screen.getByText('scheduled')).toBeInTheDocument();
     expect(screen.getByText('Paid:')).toBeInTheDocument();
     expect(screen.getByText('No')).toBeInTheDocument();
+
+    // Check that cargo is rendered and items with 0 quantity are filtered out
+    expect(screen.getByText('Iron Ore: 100 units')).toBeInTheDocument();
+    expect(screen.getByText('Wood: 50 units')).toBeInTheDocument();
+    expect(screen.queryByText(/Stone/)).not.toBeInTheDocument();
 
     // Regular users should not see update forms or assignment buttons
     expect(screen.queryByText(/Update Shipment/i)).not.toBeInTheDocument();
@@ -120,17 +137,6 @@ describe('ShipmentDetails', () => {
 
   test('allows a driver to see update form and assign themselves', async () => {
     useAuth.mockReturnValue({ currentUser: { role: 'driver', uid: 'driver1', global_name: 'Test Driver' } });
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns true, indicating the document exists. */
-        exists: () => true,
-        id: 'ship123',
-        /** @returns {object} The mock shipment data. */
-        data: () => mockShipment,
-      });
-      return () => {};
-    });
-
     render(<ShipmentDetails />);
 
     await waitFor(() => {
@@ -154,18 +160,20 @@ describe('ShipmentDetails', () => {
     expect(screen.queryByRole('button', { name: /Unassign Driver/i })).not.toBeInTheDocument();
   });
 
+  test('prevents non-driver or non-staff from assigning shipment', () => {
+    useAuth.mockReturnValue({ currentUser: { role: 'user', uid: 'user1' } });
+    render(<ShipmentDetails />);
+    expect(screen.queryByRole('button', { name: /Assign to Self/i })).not.toBeInTheDocument();
+  });
+
   test('allows staff to update all fields and manage assignments', async () => {
     useAuth.mockReturnValue({ currentUser: { role: 'staff' } });
     const assignedShipment = { ...mockShipment, driverId: 'driver1', driverName: 'Test Driver' };
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns true, indicating the document exists. */
-        exists: () => true,
-        id: 'ship123',
-        /** @returns {object} The assigned shipment data. */
-        data: () => assignedShipment,
-      });
-      return () => {};
+    useDashboard.mockReturnValue({
+      shipments: [assignedShipment],
+      loading: false,
+      error: null,
+      updateShipment: mockUpdateShipment,
     });
 
     render(<ShipmentDetails />);
@@ -203,21 +211,24 @@ describe('ShipmentDetails', () => {
     });
   });
 
+  test('prevents non-staff from unassigning a driver', () => {
+    useAuth.mockReturnValue({ currentUser: { role: 'driver', uid: 'driver2' } });
+    const assignedShipment = { ...mockShipment, driverId: 'driver1', driverName: 'Test Driver' };
+    useDashboard.mockReturnValue({
+      shipments: [assignedShipment],
+      loading: false,
+      error: null,
+      updateShipment: mockUpdateShipment,
+    });
+    render(<ShipmentDetails />);
+    expect(screen.queryByRole('button', { name: /Unassign Driver/i })).not.toBeInTheDocument();
+  });
+
   test('handles form submission failure', async () => {
     const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
     const updateError = new Error('Update failed');
     mockUpdateShipment.mockRejectedValue(updateError);
     useAuth.mockReturnValue({ currentUser: { role: 'staff' } });
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns true, indicating the document exists. */
-        exists: () => true,
-        id: 'ship123',
-        /** @returns {object} The mock shipment data. */
-        data: () => mockShipment,
-      });
-      return () => {};
-    });
 
     render(<ShipmentDetails />);
 
@@ -236,16 +247,6 @@ describe('ShipmentDetails', () => {
 
   test('navigates back when "Back to Dashboard" is clicked', async () => {
     useAuth.mockReturnValue({ currentUser: { role: 'user' } });
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns true, indicating the document exists. */
-        exists: () => true,
-        id: 'ship123',
-        /** @returns {object} The mock shipment data. */
-        data: () => mockShipment,
-      });
-      return () => {};
-    });
 
     render(<ShipmentDetails />);
 
@@ -259,16 +260,6 @@ describe('ShipmentDetails', () => {
 
   test('staff can see "cancelled" option in status drop down', async () => {
     useAuth.mockReturnValue({ currentUser: { role: 'staff' } });
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns true, indicating the document exists. */
-        exists: () => true,
-        id: 'ship123',
-        /** @returns {object} The mock shipment data. */
-        data: () => mockShipment,
-      });
-      return () => {};
-    });
 
     render(<ShipmentDetails />);
 
@@ -286,16 +277,6 @@ describe('ShipmentDetails', () => {
 
   test('driver cannot see "cancelled" option in status drop down', async () => {
     useAuth.mockReturnValue({ currentUser: { role: 'driver' } });
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns true, indicating the document exists. */
-        exists: () => true,
-        id: 'ship123',
-        /** @returns {object} The mock shipment data. */
-        data: () => mockShipment,
-      });
-      return () => {};
-    });
 
     render(<ShipmentDetails />);
 
@@ -309,5 +290,106 @@ describe('ShipmentDetails', () => {
     // The 'Cancelled' option should not be present for drivers
     const cancelledOption = screen.queryByRole('option', { name: 'Cancelled' });
     expect(cancelledOption).not.toBeInTheDocument();
+  });
+
+  // Tests for shipment cancellation
+  describe('Shipment Cancellation', () => {
+    test('allows the client who created the shipment to cancel it', async () => {
+      useAuth.mockReturnValue({ currentUser: { uid: 'user123', role: 'user' } });
+      render(<ShipmentDetails />);
+
+      const cancelButton = screen.getByRole('button', { name: /Cancel Shipment/i });
+      expect(cancelButton).toBeInTheDocument();
+
+      fireEvent.click(cancelButton);
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith(
+          '/api/shipment/cancel',
+          expect.objectContaining({
+            method: 'POST',
+            body: JSON.stringify({ documentId: 'ship123' }),
+          })
+        );
+      });
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith('Shipment cancelled!');
+      });
+    });
+
+    test('shows an alert on cancellation failure', async () => {
+      global.fetch.mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: false,
+          /**
+           * @description Mocks the `json()` method of the fetch Response object.
+           * It simulates a Server error.
+           * @returns {Promise<object>} A promise that resolves to the response data.
+           */
+          json: () => Promise.resolve({ error: 'Server error' }),
+        })
+      );
+      useAuth.mockReturnValue({ currentUser: { uid: 'user123', role: 'user' } });
+      render(<ShipmentDetails />);
+
+      fireEvent.click(screen.getByRole('button', { name: /Cancel Shipment/i }));
+
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith('Error: Server error');
+      });
+    });
+
+    test('shows a generic alert if error message is not available', async () => {
+      global.fetch.mockImplementationOnce(() =>
+        Promise.resolve({
+          ok: false,
+          /**
+           * @description Mocks the `json()` method of the fetch Response object.
+           * It resolves to an empty object, simulating an API response with no body content.
+           * @returns {Promise<object>} A promise that resolves to an empty object.
+           */
+          json: () => Promise.resolve({}),
+        })
+      );
+      useAuth.mockReturnValue({ currentUser: { uid: 'user123', role: 'user' } });
+      render(<ShipmentDetails />);
+
+      fireEvent.click(screen.getByRole('button', { name: /Cancel Shipment/i }));
+
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith('Error: Failed to cancel');
+      });
+    });
+
+    test('hides cancel button if another user is viewing', () => {
+      useAuth.mockReturnValue({ currentUser: { uid: 'anotherUser', role: 'user' } });
+      render(<ShipmentDetails />);
+      expect(screen.queryByRole('button', { name: /Cancel Shipment/i })).not.toBeInTheDocument();
+    });
+
+    test('hides cancel button if a driver is assigned', () => {
+      useAuth.mockReturnValue({ currentUser: { uid: 'user123', role: 'user' } });
+      useDashboard.mockReturnValue({
+        shipments: [{ ...mockShipment, driverId: 'driver1' }],
+        loading: false,
+        error: null,
+        updateShipment: mockUpdateShipment,
+      });
+      render(<ShipmentDetails />);
+      expect(screen.queryByRole('button', { name: /Cancel Shipment/i })).not.toBeInTheDocument();
+    });
+
+    test('alerts if user is not logged in when trying to cancel', async () => {
+      auth.currentUser = null;
+      useAuth.mockReturnValue({ currentUser: { uid: 'user123', role: 'user' } }); // Still need to render the button
+
+      render(<ShipmentDetails />);
+
+      fireEvent.click(screen.getByRole('button', { name: /Cancel Shipment/i }));
+
+      await waitFor(() => {
+        expect(window.alert).toHaveBeenCalledWith('You must be logged in.');
+      });
+    });
   });
 });
