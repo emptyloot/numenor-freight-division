@@ -47,7 +47,7 @@ function CreateShipment() {
 
   useEffect(() => {
     // Calculate the quote whenever the manifest (start/end locations) changes
-    const hexCost = Calculator(manifest);
+    const hexCost = Calculator(manifest).costEstimate;
     setQuote(hexCost);
   }, [manifest]);
 

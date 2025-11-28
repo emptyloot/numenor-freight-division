@@ -13,7 +13,7 @@ describe('Calculator Cost Estimation', () => {
         { north: 2000, east: 2000 }, // End location
       ],
     };
-    const cost = Calculator(manifest);
+    const cost = Calculator(manifest).costEstimate;
     // The expected cost is calculated based on the formula in Calculator.js for short distances.
     expect(cost).toBeCloseTo(17565);
   });
@@ -26,7 +26,7 @@ describe('Calculator Cost Estimation', () => {
         { north: 4000, east: 4000 }, // End location
       ],
     };
-    const cost = Calculator(manifest);
+    const cost = Calculator(manifest).costEstimate;
     // The expected cost includes the long haul fee.
     expect(cost).toBeCloseTo(30879);
   });
@@ -39,7 +39,7 @@ describe('Calculator Cost Estimation', () => {
         { north: 1000, east: 1000 }, // End location is the same as start
       ],
     };
-    const cost = Calculator(manifest);
+    const cost = Calculator(manifest).costEstimate;
     // The expected cost should not include any distance-based charges.
     expect(cost).toBe(11908);
   });
@@ -52,7 +52,7 @@ describe('Calculator Cost Estimation', () => {
         { north: 2950, east: 6101 }, // End location is the same as start
       ],
     };
-    const cost = Calculator(manifest);
+    const cost = Calculator(manifest).costEstimate;
     // The expected cost should not include any distance-based charges.
     expect(cost).toBe(9358);
   });
@@ -63,7 +63,7 @@ describe('Calculator Cost Estimation', () => {
         { north: 4005, east: 6577 }, // End location is the same as start
       ],
     };
-    const cost = Calculator(manifest);
+    const cost = Calculator(manifest).costEstimate;
     // The expected cost should not include any distance-based charges.
     expect(cost).toBe(31615);
   });
