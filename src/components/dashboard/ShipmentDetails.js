@@ -4,6 +4,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../firebase/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
+import { auth } from '../../firebase/firebase';
 
 /**
  * @description Displays the detailed information of a specific shipment, identified by its ID from the URL parameters.
@@ -109,11 +110,60 @@ const ShipmentDetails = () => {
     }
   };
 
+  /**
+   * @description Orchestrates the secure cancellation of the current shipment.
+   * 1. Verifies the user is logged in.
+   * 2. Retrieves a fresh Firebase ID Token for backend authorization.
+   * 3. Sends a POST request to the '/api/shipment/cancel' endpoint with the token in the header.
+   * 4. Alerts the user upon success or failure.
+   * @async
+   * @returns {Promise<void>}
+   */
+  const handleCancel = async () => {
+    if (!shipmentId) return;
+
+    try {
+      // 1. Get the current user's ID token
+      if (!auth.currentUser) {
+        alert('You must be logged in.');
+        return;
+      }
+      const token = await auth.currentUser.getIdToken();
+
+      // 2. Make the Request
+      const response = await fetch(`/api/shipment/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // <--- Critical for the new backend logic
+        },
+        body: JSON.stringify({ documentId: shipmentId }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to cancel');
+      }
+
+      alert('Shipment cancelled!');
+      // Optional: Refresh data
+    } catch (error) {
+      console.error(error);
+      alert('Error: ' + error.message);
+    }
+  };
+
   if (loading) return <div className="text-center p-4">Loading shipment details...</div>;
   if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
   if (!shipment) return null;
 
   const canUpdate = currentUser && ['staff', 'driver'].includes(currentUser.role);
+  const canCancel =
+    !shipment.driverId &&
+    currentUser.uid === shipment.userId &&
+    shipment.status !== 'cancelled' &&
+    shipment.status !== 'delivered';
 
   return (
     <main className="container mx-auto p-4 text-off-white">
@@ -187,6 +237,13 @@ const ShipmentDetails = () => {
             className="mt-4 ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
           >
             Unassign Driver
+          </button>
+        )}
+
+        {/* Cancel Shipment Button for Client */}
+        {canCancel && (
+          <button onClick={handleCancel} className="mt-4 ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+            Cancel Shipment
           </button>
         )}
 
