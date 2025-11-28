@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
 const { onNewDataEntry, processShipment, onUpdateDataEntry } = require('../triggers/firestore');
+const cancelShipment = require('./cancelShipment');
 
 const authController = require('./authController');
 const claimsController = require('./claimsController');
@@ -65,6 +66,9 @@ app.get('/api/claims', claimsController.getClaims);
 
 // Cargo routes
 app.get('/api/cargo', cargoController.getCargo);
+
+// Cancel Shipment
+app.post('/api/shipment/cancel', cancelShipment.cancelShipment);
 
 // Export the Express app as a cloud function
 exports.api = functions.https.onRequest(app);
