@@ -1,64 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { firestore } from '../../firebase/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from '../../context/DashboardContext';
 import { auth } from '../../firebase/firebase';
 
 /**
- * @description Displays the detailed information of a specific shipment, identified by its ID from the URL parameters.
- *              It fetches real-time shipment data from Firestore and allows authorized users (staff, drivers)
- *              to update the shipment's status and payment status.
- * @returns {object} {JSX.Element} The rendered shipment details page with an update form if applicable.
+ * @description Renders the details view for a specific shipment.
+ * It retrieves the shipment ID from the URL parameters, finds the corresponding
+ * shipment in the global dashboard context, and initializes local state for
+ * editing status and payment fields.
+ * @returns {object} The rendered shipment details component.
  */
 const ShipmentDetails = () => {
   const { shipmentId } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { updateShipment } = useDashboard();
+  const { shipments, loading, error, updateShipment } = useDashboard();
 
-  const [shipment, setShipment] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Find the specific shipment from the context
+  const shipment = shipments.find((s) => s.id === shipmentId);
 
   // State for the form inputs
   const [status, setStatus] = useState('');
   const [isPaid, setIsPaid] = useState(false);
 
+  // Effect to initialize/update form state when shipment data is available/changes
   useEffect(() => {
-    setLoading(true);
-    const shipmentRef = doc(firestore, 'shipments', shipmentId);
-
-    const unsubscribe = onSnapshot(
-      shipmentRef,
-      (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setShipment({ id: docSnap.id, ...data });
-          // Initialize form state when data is fetched
-          setStatus(data.status);
-          setIsPaid(data.paid);
-        } else {
-          setError('Shipment not found.');
-        }
-        setLoading(false);
-      },
-      (err) => {
-        console.error('Error fetching shipment details:', err);
-        setError('Failed to load shipment details.');
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [shipmentId]);
+    if (shipment) {
+      setStatus(shipment.status || 'scheduled');
+      setIsPaid(shipment.paid || false);
+    }
+  }, [shipment]);
 
   /**
-   * @param {object} e - The event object from the form submission.
-   * @description Handles the submission of the update form. It prevents the default form submission,
-   *              calls the `updateShipment` function from `DashboardContext` with the `shipmentId`
-   *              and the new `status` and `paid` values. It provides user feedback via alerts.
+   * @description Handles the form submission to update the shipment's status and payment state.
+   * Prevents the default form behavior and triggers an alert upon success or failure.
+   * @param {Event} e - The form submission event.
    */
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -72,8 +49,8 @@ const ShipmentDetails = () => {
   };
 
   /**
-   * @description Allows a driver to assign themselves to the current shipment.
-   *              This function is only callable by users with the 'driver' or 'staff' role.
+   * @description Assigns the currently logged-in user as the driver for the shipment.
+   * Validates that the user has the 'driver' or 'staff' role before proceeding.
    */
   const handleAssignToSelf = async () => {
     if (!['driver', 'staff'].includes(currentUser.role)) {
@@ -93,49 +70,43 @@ const ShipmentDetails = () => {
   };
 
   /**
-   * @description Allows a staff member to remove an assignment of a driver from the current shipment.
-   *              This function is only callable by users with the 'staff' role.
+   * @description Removes the currently assigned driver from the shipment.
+   * This action is restricted to users with the 'staff' role.
    */
-  const handleUnassignDriver = async () => { //eslint-disable-line
+  const handleUnassignDriver = async () => {
     if (currentUser.role !== 'staff') {
-      alert('Only staff can unassign drivers.'); //eslint-disable-line
+      alert('Only staff can unassign drivers.');
       return;
     }
     try {
       await updateShipment(shipmentId, { driverId: null, driverName: null });
       alert('The driver has been unassigned from this shipment.');
     } catch (err) {
-      console.error('Failed to unassign driver:', err); //eslint-disable-line
+      console.error('Failed to unassign driver:', err);
       alert(`Error: ${err.message}`);
     }
   };
 
   /**
-   * @description Orchestrates the secure cancellation of the current shipment.
-   * 1. Verifies the user is logged in.
-   * 2. Retrieves a fresh Firebase ID Token for backend authorization.
-   * 3. Sends a POST request to the '/api/shipment/cancel' endpoint with the token in the header.
-   * 4. Alerts the user upon success or failure.
-   * @async
-   * @returns {Promise<void>}
+   * @description Initiates a request to cancel the shipment via the backend API.
+   * It retrieves the current user's auth token for verification and sends a POST request
+   * to '/api/shipment/cancel' rather than updating Firestore directly.
    */
   const handleCancel = async () => {
     if (!shipmentId) return;
 
     try {
-      // 1. Get the current user's ID token
       if (!auth.currentUser) {
         alert('You must be logged in.');
         return;
       }
       const token = await auth.currentUser.getIdToken();
 
-      // 2. Make the Request
-      const response = await fetch(`/api/shipment/cancel`, {
+      const response = await fetch('/api/shipment/cancel', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // <--- Critical for the new backend logic
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ documentId: shipmentId }),
       });
@@ -147,7 +118,6 @@ const ShipmentDetails = () => {
       }
 
       alert('Shipment cancelled!');
-      // Optional: Refresh data
     } catch (error) {
       console.error(error);
       alert('Error: ' + error.message);
@@ -155,8 +125,10 @@ const ShipmentDetails = () => {
   };
 
   if (loading) return <div className="text-center p-4">Loading shipment details...</div>;
-  if (error) return <div className="text-center p-4 text-red-500">{error}</div>;
-  if (!shipment) return null;
+  if (error) return <div className="text-center p-4 text-red-500">{error.message}</div>;
+  if (!shipment) {
+    return <div className="text-center p-4 text-red-500">Shipment not found.</div>;
+  }
 
   const canUpdate = currentUser && ['staff', 'driver'].includes(currentUser.role);
   const canCancel =
@@ -205,7 +177,6 @@ const ShipmentDetails = () => {
             <span className="font-semibold">Client:</span> {shipment.client || 'Unassigned'}
           </p>
         )}
-        {/* Cargo Manifest Display */}
         <div className="mt-4 border-t pt-4">
           <h2 className="text-xl font-bold mb-2">Cargo Manifest</h2>
           {shipment.cargo && shipment.cargo.filter((item) => item.name && item.quantity > 0).length > 0 ? (
@@ -220,7 +191,6 @@ const ShipmentDetails = () => {
             <p>No cargo listed for this shipment.</p>
           )}
         </div>
-        {/* Assign to Self Button */}
         {canUpdate && !shipment.driverId && (
           <button
             onClick={handleAssignToSelf}
@@ -229,25 +199,19 @@ const ShipmentDetails = () => {
             Assign to Self
           </button>
         )}
-
-        {/* Remove an assignment of Driver Button for Staff */}
         {currentUser.role === 'staff' && shipment.driverId && (
           <button
-            onClick={handleUnassignDriver} //eslint-disable-line
+            onClick={handleUnassignDriver}
             className="mt-4 ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
           >
             Unassign Driver
           </button>
         )}
-
-        {/* Cancel Shipment Button for Client */}
         {canCancel && (
           <button onClick={handleCancel} className="mt-4 ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
             Cancel Shipment
           </button>
         )}
-
-        {/* Update Form for Staff and Drivers */}
         {canUpdate && (
           <form onSubmit={handleUpdate} className="mt-6 border-t pt-4">
             <h2 className="text-xl font-bold mb-2">Update Shipment</h2>
@@ -264,12 +228,9 @@ const ShipmentDetails = () => {
                 <option value="scheduled">Scheduled</option>
                 <option value="in-transit">In Transit</option>
                 <option value="delivered">Delivered</option>
-                {
-                currentUser.role === 'staff' && <option value="cancelled">Cancelled</option> //eslint-disable-line
-                }
+                {currentUser.role === 'staff' && <option value="cancelled">Cancelled</option>}
               </select>
             </div>
-
             {currentUser.role === 'staff' && (
               <div className="mb-4">
                 <label className="flex items-center">
@@ -283,7 +244,6 @@ const ShipmentDetails = () => {
                 </label>
               </div>
             )}
-
             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
               Save Changes
             </button>

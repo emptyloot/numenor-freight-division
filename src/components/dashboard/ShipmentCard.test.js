@@ -13,9 +13,16 @@ describe('ShipmentCard', () => {
   test('renders shipment details correctly when all data is provided', () => {
     const mockShipment = {
       id: 'ship123',
-      destination: 'Port Test',
-      currentStatus: 'Scheduled',
-      lastUpdated: new Date('2023-10-27T10:00:00Z'),
+      port: [{}, { north: 100, east: 200 }],
+      status: 'Scheduled',
+      createdAt: {
+        /**
+         * @description Mocks the Firestore Timestamp `toDate` method.
+         * Returns a fixed JavaScript Date object to ensure consistent test results.
+         * @returns {Date} A standard JavaScript Date representing 2023-10-27T10:00:00Z.
+         */
+        toDate: () => new Date('2023-10-27T10:00:00Z'),
+      },
     };
 
     render(
@@ -26,21 +33,20 @@ describe('ShipmentCard', () => {
 
     expect(screen.getByText(/Shipment ID: ship123/i)).toBeInTheDocument();
     expect(screen.getByText(/Destination:/i)).toBeInTheDocument();
+    expect(screen.getByText(/North:100 East:200/i)).toBeInTheDocument();
     expect(screen.getByText(/Status:/i)).toBeInTheDocument();
     expect(screen.getByText(/Scheduled/i)).toBeInTheDocument();
-    expect(screen.getByText(/Last Updated:/i)).toBeInTheDocument();
-    expect(screen.getByText(mockShipment.lastUpdated.toLocaleString())).toBeInTheDocument();
+    expect(screen.getByText(/Created:/i)).toBeInTheDocument();
+    expect(screen.getByText(mockShipment.createdAt.toDate().toLocaleString())).toBeInTheDocument();
   });
 
   /**
    * @description Verifies that the card displays fallback text ('N/A') for fields with missing data.
    */
-  test('renders fallback text when destination and lastUpdated are missing', () => {
+  test('renders fallback text when shipment data is missing', () => {
     const mockShipment = {
       id: 'ship456',
-      currentStatus: 'Pending',
-      destination: null,
-      lastUpdated: null,
+      // No port, status, or createdAt to test fall backs
     };
 
     render(
@@ -52,11 +58,11 @@ describe('ShipmentCard', () => {
     expect(screen.getByText(/Shipment ID: ship456/i)).toBeInTheDocument();
     expect(screen.getByText(/Destination:/i)).toBeInTheDocument();
     expect(screen.getByText(/Status:/i)).toBeInTheDocument();
-    expect(screen.getByText(/Pending/i)).toBeInTheDocument();
-    expect(screen.getByText(/Last Updated:/i)).toBeInTheDocument();
-    // There are two "N/A" texts, one for destination in the h2 and one for the date.
-    // We select the one that is not inside an h2 element.
-    const lastUpdatedValue = screen.getAllByText('N/A').find((el) => el.tagName !== 'H2');
-    expect(lastUpdatedValue).toBeInTheDocument();
+    expect(screen.getByText(/Scheduled/i)).toBeInTheDocument(); // Fallback status
+    expect(screen.getByText(/Created:/i)).toBeInTheDocument();
+
+    // Assert that both destination and created at fields show 'N/A'
+    const allNAs = screen.getAllByText('N/A');
+    expect(allNAs).toHaveLength(2);
   });
 });
