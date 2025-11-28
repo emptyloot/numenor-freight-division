@@ -47,7 +47,12 @@ describe('ShipmentDetails', () => {
     window.alert = jest.fn();
     useParams.mockReturnValue({ shipmentId: 'ship123' });
     useNavigate.mockReturnValue(mockNavigate);
-    useDashboard.mockReturnValue({ updateShipment: mockUpdateShipment });
+    useDashboard.mockReturnValue({
+      shipments: [mockShipment],
+      loading: false,
+      error: null,
+      updateShipment: mockUpdateShipment,
+    });
     useAuth.mockReturnValue({ currentUser: null });
   });
 
@@ -55,37 +60,38 @@ describe('ShipmentDetails', () => {
     jest.restoreAllMocks(); // Cleans up after tests finish
   });
 
-  test('displays loading message initially', () => {
-    firestore.onSnapshot.mockImplementation(() => () => {}); // No immediate callback
+  test('displays loading message when context is loading', () => {
+    useDashboard.mockReturnValue({
+      shipments: [],
+      loading: true,
+      error: null,
+      updateShipment: mockUpdateShipment,
+    });
     render(<ShipmentDetails />);
     expect(screen.getByText(/Loading shipment details.../i)).toBeInTheDocument();
   });
 
-  test('displays error message on fetch failure', async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    const errorMessage = 'Failed to load shipment details.';
-    firestore.onSnapshot.mockImplementation((ref, success, error) => {
-      error(new Error(errorMessage));
-      return () => {};
+  test('displays error message when context has an error', () => {
+    const errorMessage = 'Failed to load shipments.';
+    useDashboard.mockReturnValue({
+      shipments: [],
+      loading: false,
+      error: new Error(errorMessage),
+      updateShipment: mockUpdateShipment,
     });
     render(<ShipmentDetails />);
-    await waitFor(() => {
-      expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    });
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
 
-  test('displays "shipment not found" message', async () => {
-    firestore.onSnapshot.mockImplementation((ref, callback) => {
-      callback({
-        /** @returns {boolean} Always returns false, indicating the document does not exist. */
-        exists: () => false,
-      });
-      return () => {};
+  test('displays "shipment not found" message if not in context', () => {
+    useDashboard.mockReturnValue({
+      shipments: [], // Empty array
+      loading: false,
+      error: null,
+      updateShipment: mockUpdateShipment,
     });
     render(<ShipmentDetails />);
-    await waitFor(() => {
-      expect(screen.getByText(/Shipment not found/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText(/Shipment not found/i)).toBeInTheDocument();
   });
 
   test('renders shipment details for a regular user', async () => {
@@ -157,6 +163,12 @@ describe('ShipmentDetails', () => {
   test('allows staff to update all fields and manage assignments', async () => {
     useAuth.mockReturnValue({ currentUser: { role: 'staff' } });
     const assignedShipment = { ...mockShipment, driverId: 'driver1', driverName: 'Test Driver' };
+    useDashboard.mockReturnValue({
+      shipments: [assignedShipment],
+      loading: false,
+      error: null,
+      updateShipment: mockUpdateShipment,
+    });
     firestore.onSnapshot.mockImplementation((ref, callback) => {
       callback({
         /** @returns {boolean} Always returns true, indicating the document exists. */

@@ -8,19 +8,21 @@ import { Link } from 'react-router-dom';
  * @returns {object} {JSX.Element} The rendered shipment card.
  */
 const ShipmentCard = ({ shipment }) => {
+  const destination = shipment.port?.[1] ? `North:${shipment.port[1].north} East:${shipment.port[1].east}` : 'N/A';
+
   return (
     <Link to={`/shipment/${shipment.id}`} className="block hover:bg-gray-700 rounded-lg">
       <div className="bg-white rounded-lg shadow-md p-4 text-gray-800 h-full">
         <h2 className="text-lg font-bold mb-2">Shipment ID: {shipment.id}</h2>
         <p className="truncate">
-          <span className="font-semibold">Destination:</span> {shipment.destination || 'N/A'}
+          <span className="font-semibold">Destination:</span> {destination}
         </p>
         <p>
-          <span className="font-semibold">Status:</span> {shipment.currentStatus}
+          <span className="font-semibold">Status:</span> {shipment.status || 'Scheduled'}
         </p>
         <p>
-          <span className="font-semibold">Last Updated:</span>{' '}
-          {shipment.lastUpdated ? shipment.lastUpdated.toLocaleString() : 'N/A'}
+          <span className="font-semibold">Created:</span>{' '}
+          {shipment.createdAt?.toDate ? shipment.createdAt.toDate().toLocaleString() : 'N/A'}
         </p>
       </div>
     </Link>
