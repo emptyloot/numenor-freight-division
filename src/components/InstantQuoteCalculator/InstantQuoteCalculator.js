@@ -14,6 +14,9 @@ import LocationInput from '../inputLocation/InputLocation';
  */
 const InstantQuoteCalculator = () => {
   const [quote, setQuote] = useState(0);
+  const [outboundTpCost, setOutboundTpCost] = useState(0);
+  const [transportDistanceCost, setTransportDistanceCost] = useState(0);
+  const [shortHaulDiscount, setShortHaulDiscount] = useState(0);
   const { currentUser } = useAuth();
   const { manifest } = useManifest();
   const navigate = useNavigate();
@@ -29,8 +32,11 @@ const InstantQuoteCalculator = () => {
    */
   useEffect(() => {
     // Calculate the quote whenever the manifest (start/end locations) changes
-    const hexCost = Calculator(manifest);
-    setQuote(hexCost);
+    const costOutputs = Calculator(manifest);
+    setQuote(costOutputs.costEstimate);
+    setOutboundTpCost(costOutputs.outboundTpCost);
+    setTransportDistanceCost(costOutputs.transportDistanceCost);
+    setShortHaulDiscount(costOutputs.shortHaulDiscount);
   }, [manifest]);
   return (
     <div className="bg-primary-light/80 p-8 rounded-2x1 mt-12 backdrop-blur-sm border border-white/10 max-w-xl mx-auto">
@@ -38,12 +44,35 @@ const InstantQuoteCalculator = () => {
       <form className="space-y-4">
         <LocationInput baseId="start" label="Port of Origin" portIndex={0} />
         <LocationInput baseId="end" label="Final Destination" portIndex={1} />
+        {quote > 0 && (
+          <div className="text-left p-4 bg-black/20 rounded-lg space-y-2">
+            {outboundTpCost > 0 && (
+              <div className="flex justify-between">
+                <span>Outbound TP Cost:</span>
+                <span>{outboundTpCost.toLocaleString()} Hex</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span>Transport Distance Cost:</span>
+              <span>{transportDistanceCost.toLocaleString()} Hex</span>
+            </div>
+            {shortHaulDiscount < 0 && (
+              <div className="flex justify-between text-green-400">
+                <span>Short Haul Discount:</span>
+                <span>{shortHaulDiscount.toLocaleString()} Hex</span>
+              </div>
+            )}
+            <div className="flex justify-between border-t border-white/20 pt-2">
+              <span>Base Contract Cost:</span>
+              <span>{(4500).toLocaleString()} Hex</span>
+            </div>
+          </div>
+        )}
         <div className="pt-4">
-          <div className="w-full p-3 rounded-lg bg-gray-700/60 text-x1 font-bold text-accent">
-            {quote > 0 ? `${quote.toLocaleString()} Hex +#*` : '--- Hex +#*'}
+          <div className="w-full p-3 rounded-lg bg-gray-700/60 text-5xl font-bold text-accent">
+            {quote > 0 ? `Total: ${quote.toLocaleString()} Hex` : '--- Hex'}
           </div>
         </div>
-        <p>*additional cost is calculated based on outbound teleport cost from Armenelos</p>
         <div className="pt-6">
           {currentUser ? (
             <button

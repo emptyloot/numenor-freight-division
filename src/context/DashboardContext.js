@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { firestore } from '../firebase/firebase';
-import { collection, query, where, onSnapshot, doc, updateDoc, orderBy, getDocs } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, updateDoc, orderBy } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 
 const DashboardContext = createContext();
@@ -71,23 +71,6 @@ export const DashboardProvider = ({ children }) => {
    *              The listener is cleaned up on component unmount or when the user changes.
    */
   useEffect(() => {
-    /**
-     * @description Processes a Firestore query snapshot into a standardized array of shipment objects.
-     * @param {object} querySnapshot - The Firestore QuerySnapshot object containing shipment documents.
-     * @returns {object} Array<object> An array of standardized shipment objects.
-     */
-    const processSnapshot = (querySnapshot) => {
-      return querySnapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          destination: `North:${data.port[1].north} East:${data.port[1].east}`,
-          lastUpdated: data.createdAt?.toDate(), // Convert Firestore Timestamp to JS Date
-          currentStatus: data.status, // Default to 'Scheduled' if status is null/undefined
-        };
-      });
-    };
-
     if (!currentUser) {
       setShipments([]);
       setLoading(false);
@@ -97,47 +80,90 @@ export const DashboardProvider = ({ children }) => {
     setLoading(true);
     const shipmentsRef = collection(firestore, 'shipments');
     /**
-     *
+     * @description Initializes a placeholder function for the Firestore listener cleanup.
+     * This will be reassigned to the actual unsubscribe function returned by onSnapshot.
      */
     let unsubscribe = () => {};
 
     /**
-     *
+     * @description Helper function to process the Firestore snapshot into an array of shipment objects.
+     * It extracts the document ID and spreads the document data.
+     * @param {object} querySnapshot - The snapshot object returned from a Firestore query.
+     * @returns {Array<object>} An array of mapped shipment objects.
      */
-    const setupListener = async () => {
-      try {
-        let q;
-        // Conditionally build the query based on the user's role
-        if (['staff'].includes(currentUser.role)) {
-          // Staff and drivers can see all shipments, ordered by creation date
-          q = query(shipmentsRef, orderBy('createdAt', 'desc'));
-          unsubscribe = onSnapshot(q, (snapshot) => setShipments(processSnapshot(snapshot)), setError);
-        } else if (currentUser.role === 'driver') {
-          // For drivers, we need two separate queries and merge them client-side.
-          // This is because Firestore rules can't handle the OR logic with `userId` checks.
-          const assignedQuery = query(shipmentsRef, where('driverId', '==', currentUser.uid));
-          const unassignedQuery = query(shipmentsRef, where('driverId', '==', null));
-
-          // We use getDocs for an initial load. For real-time, you'd set up two onSnapshot listeners.
-          const [assignedSnap, unassignedSnap] = await Promise.all([getDocs(assignedQuery), getDocs(unassignedQuery)]);
-
-          const assignedShipments = processSnapshot(assignedSnap);
-          const unassignedShipments = processSnapshot(unassignedSnap);
-
-          setShipments([...assignedShipments, ...unassignedShipments]);
-        } else {
-          // Clients see shipments they created
-          q = query(shipmentsRef, where('userId', '==', currentUser.uid));
-          unsubscribe = onSnapshot(q, (snapshot) => setShipments(processSnapshot(snapshot)), setError);
-        }
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
+    const processSnapshot = (querySnapshot) => {
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     };
 
-    setupListener();
+    // Role-based query logic
+    if (currentUser.role === 'staff') {
+      const q = query(shipmentsRef, orderBy('createdAt', 'desc'));
+      unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          setShipments(processSnapshot(snapshot));
+          setLoading(false);
+        },
+        (err) => {
+          setError(err);
+          setLoading(false);
+        }
+      );
+    } else if (currentUser.role === 'driver') {
+      let assignedShipments = [];
+      let unassignedShipments = [];
+
+      const assignedQuery = query(shipmentsRef, where('driverId', '==', currentUser.uid));
+      const unassignedQuery = query(shipmentsRef, where('driverId', '==', null));
+
+      const unsubscribeAssigned = onSnapshot(
+        assignedQuery,
+        (snapshot) => {
+          assignedShipments = processSnapshot(snapshot);
+          setShipments([...assignedShipments, ...unassignedShipments].sort((a, b) => b.createdAt - a.createdAt));
+          setLoading(false);
+        },
+        (err) => {
+          setError(err);
+          setLoading(false);
+        }
+      );
+
+      const unsubscribeUnassigned = onSnapshot(
+        unassignedQuery,
+        (snapshot) => {
+          unassignedShipments = processSnapshot(snapshot);
+          setShipments([...assignedShipments, ...unassignedShipments].sort((a, b) => b.createdAt - a.createdAt));
+          setLoading(false);
+        },
+        (err) => {
+          setError(err);
+          setLoading(false);
+        }
+      );
+
+      /**
+       *
+       */
+      unsubscribe = () => {
+        unsubscribeAssigned();
+        unsubscribeUnassigned();
+      };
+    } else {
+      // Client
+      const q = query(shipmentsRef, where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+      unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          setShipments(processSnapshot(snapshot));
+          setLoading(false);
+        },
+        (err) => {
+          setError(err);
+          setLoading(false);
+        }
+      );
+    }
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
