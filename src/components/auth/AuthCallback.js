@@ -33,7 +33,14 @@ const AuthCallback = () => {
           return signInWithCustomToken(auth, firebaseToken);
         })
         .then((userCredential) => {
-          navigate('/'); // Redirect to homepage after successful login
+          // After signing in with the custom token, get the ID token
+          return userCredential.user.getIdToken().then((idToken) => {
+            // Send the ID token to the backend to create a session cookie
+            return axios.post('/api/auth/sessionLogin', { idToken });
+          });
+        })
+        .then(() => {
+          navigate('/'); // Redirect to homepage after successful session login
         })
         .catch((error) => {
           console.error('Authentication failed:', error);
