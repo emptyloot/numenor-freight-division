@@ -1,4 +1,4 @@
-import backGroundMap from '../../assets/bitcraftmapbackground.png';
+import backGroundMap from '../../assets/bitcraftmapbackground.webp';
 
 /**
 @description Uses a blur background and overlay. Give good backdrop for contrast.

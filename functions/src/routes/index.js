@@ -2,12 +2,15 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const { onNewDataEntry, processShipment, onUpdateDataEntry } = require('../triggers/firestore');
 const cancelShipment = require('./cancelShipment');
 
 const authController = require('./authController');
 const claimsController = require('./claimsController');
 const cargoController = require('./cargoController');
+const { verifySessionCookie } = require('../utils/authMiddleware');
+
 // Initialize Firebase Admin SDK
 if (process.env.FUNCTIONS_EMULATOR) {
   admin.initializeApp({
@@ -18,6 +21,7 @@ if (process.env.FUNCTIONS_EMULATOR) {
 }
 
 const app = express();
+app.use(cookieParser());
 
 const webOrigin = process.env.ALLOWED_ORIGIN_WEB;
 const fbOrigin = process.env.ALLOWED_ORIGIN_FB; // eslint-disable-line
@@ -60,15 +64,17 @@ app.get('/api', (req, res) => {
 // Authentication routes
 app.get('/api/auth/config', authController.getAuthConfig);
 app.post('/api/auth/discord', authController.handleDiscordAuth);
+app.post('/api/auth/sessionLogin', authController.sessionLogin);
+app.post('/api/auth/sessionLogout', authController.sessionLogout);
 
 // Claims routes
-app.get('/api/claims', claimsController.getClaims);
+app.get('/api/claims', verifySessionCookie, claimsController.getClaims);
 
 // Cargo routes
-app.get('/api/cargo', cargoController.getCargo);
+app.get('/api/cargo', verifySessionCookie, cargoController.getCargo);
 
 // Cancel Shipment
-app.post('/api/shipment/cancel', cancelShipment.cancelShipment);
+app.post('/api/shipment/cancel', verifySessionCookie, cancelShipment.cancelShipment);
 
 // Export the Express app as a cloud function
 exports.api = functions.https.onRequest(app);
