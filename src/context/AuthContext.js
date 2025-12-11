@@ -30,16 +30,8 @@ export const AuthProvider = ({ children }) => {
   /**
    * @description Signs out the current user from Firebase.
    */
-  const logout = async () => {
-    try {
-      // Call the backend to clear the session cookie
-      await fetch('/api/auth/sessionLogout', { method: 'POST' });
-    } catch (error) {
-      console.error('Error logging out on server:', error);
-    } finally {
-      // Always sign out the user from the client-side Firebase instance
-      signOut(auth);
-    }
+  const logout = () => {
+    signOut(auth);
   };
 
   /**

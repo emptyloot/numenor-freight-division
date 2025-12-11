@@ -97,50 +97,22 @@ describe('AuthCallback', () => {
   it('should handle successful authentication and redirect to home', async () => {
     const mockCode = 'test_code_123';
     const mockFirebaseToken = 'test_firebase_token';
-    const mockIdToken = 'test_id_token';
-    const mockUser = {
-      getIdToken: jest.fn().mockResolvedValue(mockIdToken),
-    };
-
     mockUseLocation.mockReturnValue({ search: `?code=${mockCode}` });
-
-    // Mock the first axios call for discord auth
-    mockAxiosPost.mockResolvedValueOnce({
+    mockAxiosPost.mockResolvedValue({
       data: { firebaseToken: mockFirebaseToken },
     });
-
-    // Mock the second axios call for session login
-    mockAxiosPost.mockResolvedValueOnce({ status: 200 });
-
-    mockSignInWithCustomToken.mockResolvedValue({ user: mockUser });
+    mockSignInWithCustomToken.mockResolvedValue({ user: { uid: '123' } });
 
     render(<AuthCallback />);
 
-    // Verify discord auth call
     await waitFor(() => {
-      expect(mockAxiosPost).toHaveBeenCalledWith('/api/auth/discord', {
-        code: mockCode,
-      });
+      expect(mockAxiosPost).toHaveBeenCalledWith(expect.stringContaining('/api/auth/discord'), { code: mockCode });
     });
 
-    // Verify firebase sign-in
     await waitFor(() => {
       expect(mockSignInWithCustomToken).toHaveBeenCalledWith(auth, mockFirebaseToken);
     });
 
-    // Verify getIdToken call
-    await waitFor(() => {
-      expect(mockUser.getIdToken).toHaveBeenCalled();
-    });
-
-    // Verify session login call
-    await waitFor(() => {
-      expect(mockAxiosPost).toHaveBeenCalledWith('/api/auth/sessionLogin', {
-        idToken: mockIdToken,
-      });
-    });
-
-    // Verify final navigation
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/');
     });

@@ -211,45 +211,7 @@ describe('AuthContext', () => {
     // Then, click the logout button. fireEvent.click is already wrapped in act.
     fireEvent.click(screen.getByTestId('logout-button'));
 
-    await waitFor(() => {
-      expect(signOut).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('should call session logout endpoint when logout is invoked', async () => {
-    const mockUser = { uid: '123', email: 'test@example.com' };
-    const fetchSpy = jest.spyOn(window, 'fetch').mockResolvedValue({ ok: true });
-
-    render(
-      <AuthProvider>
-        <TestConsumer />
-      </AuthProvider>
-    );
-
-    // First, sign in a user
-    await act(async () => onAuthStateChangedCallback(mockUser));
-    // Simulate firestore returning the user's profile to complete loading
-    await act(async () =>
-      onSnapshotCallback({
-        /**
-         * @returns {boolean} true mocked
-         */
-        exists: () => true,
-        /**
-         * @returns {object} data object mocked
-         */
-        data: () => ({ role: 'admin' }),
-      })
-    );
-
-    // Then, click the logout button
-    fireEvent.click(screen.getByTestId('logout-button'));
-
-    await waitFor(() => {
-      expect(fetchSpy).toHaveBeenCalledWith('/api/auth/sessionLogout', { method: 'POST' });
-    });
-
-    fetchSpy.mockRestore();
+    expect(signOut).toHaveBeenCalledTimes(1);
   });
 
   /**

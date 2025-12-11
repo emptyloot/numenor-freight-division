@@ -111,42 +111,7 @@ const handleDiscordAuth = async (req, res) => {
   }
 };
 
-/**
- * @description Creates a session cookie after verifying the Firebase ID token.
- * The cookie's expiration is set to 8 hours.
- * @param {object} req The Express request object, containing the ID token in the body.
- * @param {object} res The Express response object.
- * @returns {Promise<void>} A promise that resolves when the cookie is set.
- */
-const sessionLogin = async (req, res) => {
-  try {
-    const idToken = req.body.idToken.toString();
-    // Set session expiration to 24 hours.
-    const expiresIn = 60 * 60 * 24 * 1000;
-
-    const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
-    const options = { maxAge: expiresIn, httpOnly: true, secure: true };
-    res.cookie('session', sessionCookie, options);
-    res.end(JSON.stringify({ status: 'success' }));
-  } catch (error) {
-    console.error('Error creating session cookie:', error);
-    res.status(401).send('Unauthorized request');
-  }
-};
-
-/**
- * @description Clears the session cookie to log the user out.
- * @param {object} req The Express request object.
- * @param {object} res The Express response object.
- */
-const sessionLogout = (req, res) => {
-  res.clearCookie('session');
-  res.status(200).send('Logged out');
-};
-
 module.exports = {
   getAuthConfig,
   handleDiscordAuth,
-  sessionLogin,
-  sessionLogout,
 };
